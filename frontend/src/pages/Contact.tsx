@@ -44,8 +44,8 @@ const Contact: React.FC = () => {
               Contact Us
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Get in touch with our Delhi-based team for product inquiries, design consultations, 
-              or architectural collaborations.
+              Get in touch with our Delhi-based team for product inquiries, order support, 
+              or customer service assistance.
             </p>
           </div>
         </div>
@@ -72,12 +72,12 @@ const Contact: React.FC = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      <span>
-                        <strong>Ukiyo Lifestyle Studio</strong><br />
-                        Block A, Connaught Place<br />
-                        New Delhi, Delhi 110001<br />
-                        India
-                      </span>
+                                             <span>
+                         <strong>Ukiyo Lifestyle</strong><br />
+                         Customer Service Center<br />
+                         New Delhi, Delhi 110001<br />
+                         India
+                       </span>
                     </p>
                     
                     <p className="flex items-center">
@@ -118,42 +118,42 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Services */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Our Services</h3>
-                  <ul className="space-y-2 text-gray-600">
-                    <li className="flex items-center">
-                      <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Product Consultation & Selection
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Interior Design Collaboration
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Architectural Project Partnerships
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Custom Product Sourcing
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Home Styling Services
-                    </li>
-                  </ul>
-                </div>
+                                 {/* Services */}
+                 <div>
+                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Customer Support</h3>
+                   <ul className="space-y-2 text-gray-600">
+                     <li className="flex items-center">
+                       <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                       </svg>
+                       Product Information & Recommendations
+                     </li>
+                     <li className="flex items-center">
+                       <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                       </svg>
+                       Order Tracking & Updates
+                     </li>
+                     <li className="flex items-center">
+                       <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                       </svg>
+                       Returns & Exchanges
+                     </li>
+                     <li className="flex items-center">
+                       <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                       </svg>
+                       Delivery & Shipping Support
+                     </li>
+                     <li className="flex items-center">
+                       <svg className="w-5 h-5 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                       </svg>
+                       Payment & Billing Assistance
+                     </li>
+                   </ul>
+                 </div>
               </div>
             </div>
 
@@ -226,12 +226,12 @@ const Contact: React.FC = () => {
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
-                        <option value="general">General Inquiry</option>
-                        <option value="consultation">Design Consultation</option>
-                        <option value="collaboration">Architectural Partnership</option>
-                        <option value="custom">Custom Sourcing</option>
-                        <option value="styling">Home Styling</option>
-                        <option value="support">Customer Support</option>
+                                                 <option value="general">General Inquiry</option>
+                         <option value="product">Product Information</option>
+                         <option value="order">Order Support</option>
+                         <option value="shipping">Shipping & Delivery</option>
+                         <option value="return">Returns & Exchanges</option>
+                         <option value="support">Customer Support</option>
                       </select>
                     </div>
                   </div>
@@ -286,11 +286,11 @@ const Contact: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-cormorant font-bold text-gray-900 mb-4">
-              Visit Our Delhi Studio
+              Our Delhi Operations
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Located in the heart of Connaught Place, our studio is easily accessible 
-              by metro, bus, and car. We're in the center of Delhi's vibrant commercial district.
+              Based in Delhi, we serve customers across India with fast shipping and 
+              excellent customer service. Our operations center ensures quick order processing.
             </p>
           </div>
 
@@ -332,14 +332,14 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-8 p-4 bg-primary-50 rounded-lg">
-                <h4 className="font-semibold text-primary-900 mb-2">Planning a Visit?</h4>
-                <p className="text-primary-800 text-sm">
-                  We recommend scheduling an appointment for personalized consultations. 
-                  Walk-ins are welcome during business hours, but appointments ensure 
-                  dedicated time with our design experts.
-                </p>
-              </div>
+                             <div className="mt-8 p-4 bg-primary-50 rounded-lg">
+                 <h4 className="font-semibold text-primary-900 mb-2">Need Help?</h4>
+                 <p className="text-primary-800 text-sm">
+                   Our customer service team is available to help with product questions, 
+                   order tracking, returns, and any other assistance you need. Contact us 
+                   via phone, email, or the form above.
+                 </p>
+               </div>
             </div>
             
             <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
@@ -362,16 +362,16 @@ const Contact: React.FC = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Do you offer interior design consultations?
-              </h3>
-              <p className="text-gray-600">
-                Yes! Our team of architects and interior designers offer comprehensive 
-                consultation services. We can help with space planning, product selection, 
-                and complete interior design projects across Delhi and NCR.
-              </p>
-            </div>
+                         <div className="border-b border-gray-200 pb-6">
+               <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                 How can I track my order?
+               </h3>
+               <p className="text-gray-600">
+                 Once your order is shipped, you'll receive a tracking number via email and SMS. 
+                 You can also track your order by logging into your account or contacting our 
+                 customer service team.
+               </p>
+             </div>
 
             <div className="border-b border-gray-200 pb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">
@@ -384,27 +384,27 @@ const Contact: React.FC = () => {
               </p>
             </div>
 
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Can I see products before purchasing?
-              </h3>
-              <p className="text-gray-600">
-                Absolutely! Visit our Connaught Place studio to experience our products 
-                firsthand. We encourage customers to touch, feel, and visualize products 
-                in our beautifully designed showroom.
-              </p>
-            </div>
+                         <div className="border-b border-gray-200 pb-6">
+               <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                 What is your return policy?
+               </h3>
+               <p className="text-gray-600">
+                 We offer a 30-day return policy on most items. Products must be in original 
+                 condition with tags attached. Some items like personalized products may have 
+                 different return terms. Check our returns page for full details.
+               </p>
+             </div>
 
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Do you work with architects and builders?
-              </h3>
-              <p className="text-gray-600">
-                Yes, we have extensive experience collaborating with architectural firms, 
-                interior designers, and builders across Delhi. We offer trade pricing and 
-                project-specific sourcing services.
-              </p>
-            </div>
+                         <div>
+               <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                 Do you offer bulk or wholesale pricing?
+               </h3>
+               <p className="text-gray-600">
+                 Yes, we offer special pricing for bulk orders and business customers. 
+                 Contact our sales team for volume discounts and corporate pricing. 
+                 Minimum order quantities may apply.
+               </p>
+             </div>
           </div>
         </div>
       </section>
