@@ -13,20 +13,35 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ukiyo_lifestyle', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+// Database connection (with graceful handling)
+let mongoConnected = false;
+
+const connectMongo = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ukiyo_lifestyle', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    });
+    console.log('✅ Connected to MongoDB');
+    mongoConnected = true;
+  } catch (err) {
+    console.warn('⚠️  MongoDB connection failed:', err.message);
+    console.log('🔄 Server will continue without database (API endpoints will return mock data)');
+    mongoConnected = false;
+  }
+};
+
+// Try to connect to MongoDB
+connectMongo();
 
 // Basic route
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Welcome to Ukiyo Lifestyle API',
     version: '1.0.0',
-    status: 'running'
+    status: 'running',
+    database: mongoConnected ? 'connected' : 'disconnected'
   });
 });
 
@@ -35,7 +50,8 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    database: mongoConnected ? 'connected' : 'disconnected'
   });
 });
 
