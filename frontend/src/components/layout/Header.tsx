@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useCartStore, useUIStore, useProductStore } from '../../store';
 
 const Header: React.FC = () => {
-  const navigate = useNavigate();
   const { cart, toggleCart } = useCartStore();
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useUIStore();
   const { categories, fetchCategories } = useProductStore();

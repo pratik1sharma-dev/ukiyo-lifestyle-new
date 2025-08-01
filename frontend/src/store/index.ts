@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product, Category, Cart, User, LoadingState } from '../types';
+import type { Product, Category, Cart, User, LoadingState } from '../types';
 import { productApi, categoryApi, cartApi } from '../services/api';
 
 // Product Store
@@ -16,7 +16,7 @@ interface ProductState {
   fetchProductBySlug: (slug: string) => Promise<void>;
 }
 
-export const useProductStore = create<ProductState>((set, get) => ({
+export const useProductStore = create<ProductState>((set) => ({
   products: [],
   featuredProducts: [],
   categories: [],
@@ -89,7 +89,7 @@ interface CartState {
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       cart: null,
       isOpen: false,
       loading: { isLoading: false, error: null },
@@ -175,12 +175,12 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       isAuthenticated: false,
       loading: { isLoading: false, error: null },
 
-      login: async (email: string, password: string) => {
+      login: async (_email: string, _password: string) => {
         set({ loading: { isLoading: true, error: null } });
         try {
           // TODO: Implement login API call
@@ -195,7 +195,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      register: async (userData: any) => {
+      register: async (_userData: any) => {
         set({ loading: { isLoading: true, error: null } });
         try {
           // TODO: Implement register API call

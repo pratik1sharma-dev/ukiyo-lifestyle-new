@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useProductStore, useCartStore } from '../store';
-import { ProductFilters } from '../types';
+import type { ProductFilters } from '../types';
 
 const Products: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

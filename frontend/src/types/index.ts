@@ -23,6 +23,7 @@ export interface Product {
   isFeatured?: boolean;
   rating?: number;
   reviewCount?: number;
+  sku?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -124,6 +125,8 @@ export interface PaginationParams {
 }
 
 export interface ProductFilters {
+  page?: number;
+  limit?: number;
   category?: string;
   minPrice?: number;
   maxPrice?: number;
