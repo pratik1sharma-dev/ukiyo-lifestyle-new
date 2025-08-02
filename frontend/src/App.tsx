@@ -9,6 +9,7 @@ import Cart from './pages/Cart';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
+import ModernLogin from './pages/ModernLogin';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Checkout from './pages/Checkout';
@@ -45,7 +46,8 @@ function App() {
                   <Route path="/returns" element={<Returns />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/support" element={<Support />} />
-                  <Route path="/login" element={<Login />} />
+                  <Route path="/login" element={<ModernLogin />} />
+          <Route path="/login-old" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/profile" element={
                     <ProtectedRoute>

@@ -114,16 +114,34 @@ export const cartApi = {
   },
 };
 
-// Auth API (for future implementation)
+// Auth API - Multiple authentication methods
 export const authApi = {
+  // Traditional email/password login
   login: async (email: string, password: string) => {
     return api.post('/auth/login', { email, password });
   },
 
+  // Traditional registration
   register: async (userData: { firstName: string; lastName: string; email: string; password: string; phone?: string }) => {
     return api.post('/auth/register', userData);
   },
 
+  // Mobile OTP - Request OTP
+  requestOTP: async (phoneNumber: string, method: 'sms' | 'whatsapp' = 'sms') => {
+    return api.post('/auth/request-otp', { phoneNumber, method });
+  },
+
+  // Mobile OTP - Verify OTP and login/register
+  verifyOTP: async (phoneNumber: string, otp: string) => {
+    return api.post('/auth/verify-otp', { phoneNumber, otp });
+  },
+
+  // Google OAuth login
+  googleLogin: async (idToken: string) => {
+    return api.post('/auth/google', { idToken });
+  },
+
+  // Profile management
   updateProfile: async (userData: { firstName: string; lastName: string; email: string; phone: string }) => {
     return api.put('/auth/profile', userData);
   },
@@ -132,6 +150,7 @@ export const authApi = {
     return api.get('/auth/profile');
   },
 
+  // Session management
   logout: async () => {
     return api.post('/auth/logout');
   },

@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const authService = require('../services/authService');
 const router = express.Router();
 
 // Mock user storage (in-memory, for development when MongoDB is not available)
@@ -487,6 +488,104 @@ router.get('/verify', authenticateToken, async (req, res) => {
       user: isMongoConnected() ? req.user.getPublicProfile() : mockUserMethods.getPublicProfile(req.user)
     }
   });
+});
+
+// POST /api/auth/request-otp - Request OTP for phone number
+router.post('/request-otp', async (req, res) => {
+  try {
+    const { phoneNumber, method = 'sms' } = req.body;
+
+    if (!phoneNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is required'
+      });
+    }
+
+    const result = await authService.requestOTP(phoneNumber, method);
+
+    res.json({
+      success: true,
+      message: `OTP sent via ${method}`,
+      data: {
+        phone: result.phone,
+        method: result.method,
+        mock: result.mock
+      }
+    });
+  } catch (error) {
+    console.error('Request OTP error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to send OTP'
+    });
+  }
+});
+
+// POST /api/auth/verify-otp - Verify OTP and login/register
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { phoneNumber, otp } = req.body;
+
+    if (!phoneNumber || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number and OTP are required'
+      });
+    }
+
+    const result = await authService.verifyOTP(phoneNumber, otp);
+
+    res.json({
+      success: true,
+      message: result.isNewUser ? 'Account created successfully' : 'Login successful',
+      data: {
+        user: result.user,
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+        isNewUser: result.isNewUser
+      }
+    });
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Invalid OTP'
+    });
+  }
+});
+
+// POST /api/auth/google - Google OAuth login
+router.post('/google', async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google ID token is required'
+      });
+    }
+
+    const result = await authService.verifyGoogleToken(idToken);
+
+    res.json({
+      success: true,
+      message: result.isNewUser ? 'Account created successfully' : 'Login successful',
+      data: {
+        user: result.user,
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+        isNewUser: result.isNewUser
+      }
+    });
+  } catch (error) {
+    console.error('Google OAuth error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Google authentication failed'
+    });
+  }
 });
 
 // Export middleware for use in other routes
