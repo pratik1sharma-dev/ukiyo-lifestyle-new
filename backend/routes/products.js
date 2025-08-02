@@ -30,12 +30,14 @@ router.get('/', async (req, res) => {
     
     res.json({
       success: true,
-      data: products,
-      pagination: {
-        current: parseInt(page),
-        total: Math.ceil(total / limit),
-        hasNext: page * limit < total,
-        hasPrev: page > 1
+      data: {
+        products: products,
+        pagination: {
+          current: parseInt(page),
+          total: Math.ceil(total / limit),
+          hasNext: page * limit < total,
+          hasPrev: page > 1
+        }
       }
     });
   } catch (error) {

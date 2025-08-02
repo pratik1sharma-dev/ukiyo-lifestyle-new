@@ -107,7 +107,7 @@ const Products: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="">All Categories</option>
-                  {categories.map((category) => (
+                  {categories?.map((category) => (
                     <option key={category._id} value={category.slug}>
                       {category.name}
                     </option>
@@ -165,7 +165,7 @@ const Products: React.FC = () => {
             {/* Sort and Results Info */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
               <p className="text-sm text-gray-600 mb-4 sm:mb-0">
-                Showing {products.length} products
+                Showing {products?.length || 0} products
               </p>
               
               <div className="flex items-center space-x-4">
@@ -199,7 +199,7 @@ const Products: React.FC = () => {
                   Try Again
                 </button>
               </div>
-            ) : products.length === 0 ? (
+            ) : (products?.length || 0) === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg mb-4">No products found</p>
                 <button
@@ -213,14 +213,14 @@ const Products: React.FC = () => {
               
               /* Products Grid */
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
+                {products?.map((product) => (
                   <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow">
                     
                     {/* Product Image */}
                     <Link to={`/products/${product.slug}`}>
                       <div className="aspect-square bg-gray-100 overflow-hidden">
                         <img
-                          src={product.images[0] || '/placeholder-product.jpg'}
+                          src={product.images?.[0] || '/placeholder-product.jpg'}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -281,7 +281,7 @@ const Products: React.FC = () => {
             )}
 
             {/* Pagination - Placeholder for now */}
-            {products.length > 0 && (
+            {(products?.length || 0) > 0 && (
               <div className="mt-12 flex justify-center">
                 <div className="flex space-x-2">
                   <button className="px-3 py-2 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed">
