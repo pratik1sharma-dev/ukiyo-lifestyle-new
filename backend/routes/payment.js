@@ -193,8 +193,19 @@ router.post('/create-order', authenticateToken, async (req, res) => {
       });
     }
 
+    // Generate order number
+    const generateOrderNumber = () => {
+      const date = new Date();
+      const year = date.getFullYear().toString().slice(-2);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const random = Math.floor(1000 + Math.random() * 9000);
+      return `UK${year}${month}${day}${random}`;
+    };
+
     // Create order in database
     order = new Order({
+      orderNumber: generateOrderNumber(), // Explicitly set order number
       user: userId,
       email: shippingAddress.email,
       items: cart.items.map(item => ({
@@ -208,7 +219,10 @@ router.post('/create-order', authenticateToken, async (req, res) => {
         totalPrice: item.price * item.quantity
       })),
       shippingAddress,
+      orderStatus: 'pending',
+      paymentStatus: 'pending',
       paymentMethod,
+      paymentDetails: {},
       pricing: {
         subtotal: cart.subtotal,
         discount: 0,
@@ -220,41 +234,70 @@ router.post('/create-order', authenticateToken, async (req, res) => {
         method: 'standard',
         cost: cart.shipping,
         estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      }
+      },
+      notes: {
+        customerNotes: '',
+        adminNotes: ''
+      },
+      timeline: [{
+        status: 'pending',
+        message: 'Order created successfully',
+        timestamp: new Date(),
+        updatedBy: 'system'
+      }]
     });
 
     await order.save();
 
     if (paymentMethod === 'razorpay') {
-      // Create Razorpay order
-      const razorpayOrder = await razorpay.orders.create({
-        amount: Math.round(order.pricing.total * 100), // Amount in paise
-        currency: 'INR',
-        receipt: order.orderNumber,
-        notes: {
-          orderId: order._id.toString(),
-          userId: userId,
-          orderNumber: order.orderNumber
-        }
-      });
-
-      // Update order with Razorpay order ID
-      order.paymentDetails.razorpayOrderId = razorpayOrder.id;
-      await order.save();
-
-      res.json({
-        success: true,
-        message: 'Order created successfully',
-        data: {
-          order: order,
-          razorpayOrder: {
-            id: razorpayOrder.id,
-            amount: razorpayOrder.amount,
-            currency: razorpayOrder.currency,
-            receipt: razorpayOrder.receipt
+      try {
+        // Create Razorpay order
+        const razorpayOrder = await razorpay.orders.create({
+          amount: Math.round(order.pricing.total * 100), // Amount in paise
+          currency: 'INR',
+          receipt: order.orderNumber,
+          notes: {
+            orderId: order._id.toString(),
+            userId: userId,
+            orderNumber: order.orderNumber
           }
-        }
-      });
+        });
+
+        // Update order with Razorpay order ID
+        order.paymentDetails.razorpayOrderId = razorpayOrder.id;
+        await order.save();
+
+        res.json({
+          success: true,
+          message: 'Order created successfully',
+          data: {
+            order: order,
+            razorpayOrder: {
+              id: razorpayOrder.id,
+              amount: razorpayOrder.amount,
+              currency: razorpayOrder.currency,
+              receipt: razorpayOrder.receipt,
+              status: razorpayOrder.status
+            }
+          }
+        });
+      } catch (razorpayError) {
+        console.error('Razorpay order creation failed:', razorpayError);
+        
+        // Update order status to reflect payment failure
+        order.paymentStatus = 'failed';
+        order.orderStatus = 'cancelled';
+        order.paymentDetails.error = razorpayError.message;
+        order.addTimelineEntry('cancelled', `Payment failed: ${razorpayError.message}`);
+        await order.save();
+
+        return res.status(400).json({
+          success: false,
+          message: 'Failed to create payment order',
+          error: razorpayError.message || 'Payment gateway error',
+          code: 'PAYMENT_GATEWAY_ERROR'
+        });
+      }
     } else {
       res.json({
         success: true,
@@ -298,9 +341,17 @@ router.post('/verify', authenticateToken, async (req, res) => {
     const generated_signature = hmac.digest('hex');
 
     if (generated_signature !== razorpay_signature) {
+      console.error('Payment signature verification failed:', {
+        expected: generated_signature,
+        received: razorpay_signature,
+        orderId: razorpay_order_id,
+        paymentId: razorpay_payment_id
+      });
+      
       return res.status(400).json({
         success: false,
-        message: 'Payment verification failed'
+        message: 'Payment verification failed - Invalid signature',
+        code: 'INVALID_SIGNATURE'
       });
     }
 
@@ -359,7 +410,26 @@ router.post('/verify', authenticateToken, async (req, res) => {
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: 'Order not found'
+        message: 'Order not found',
+        code: 'ORDER_NOT_FOUND'
+      });
+    }
+
+    // Check if order belongs to the authenticated user
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - Order does not belong to user',
+        code: 'UNAUTHORIZED_ORDER_ACCESS'
+      });
+    }
+
+    // Check if order is already paid
+    if (order.paymentStatus === 'paid') {
+      return res.status(400).json({
+        success: false,
+        message: 'Order is already paid',
+        code: 'ORDER_ALREADY_PAID'
       });
     }
 
@@ -388,10 +458,22 @@ router.post('/verify', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Payment verification error:', error);
+    
+    // Handle specific Razorpay errors
+    if (error.error && error.error.description) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment verification failed',
+        error: error.error.description,
+        code: 'RAZORPAY_ERROR'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Payment verification failed',
-      error: error.message
+      error: error.message,
+      code: 'INTERNAL_SERVER_ERROR'
     });
   }
 });

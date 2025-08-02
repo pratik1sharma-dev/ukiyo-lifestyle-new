@@ -93,7 +93,7 @@ interface CartState {
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       cart: null,
       isOpen: false,
       loading: { isLoading: false, error: null },

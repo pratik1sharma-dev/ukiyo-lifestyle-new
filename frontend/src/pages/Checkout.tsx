@@ -162,7 +162,7 @@ const Checkout: React.FC = () => {
       if (paymentMethod === 'razorpay' && razorpayOrder) {
         // Initialize Razorpay payment
         const options = {
-          key: 'rzp_test_1234567890', // This should come from config
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_YdF3OnygSeV4jV', // Use environment variable or fallback
           amount: razorpayOrder.amount,
           currency: razorpayOrder.currency,
           name: 'Ukiyo Lifestyle',
