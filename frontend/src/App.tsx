@@ -15,6 +15,7 @@ import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProducts from './pages/admin/Products';
+import AdminProductForm from './pages/admin/ProductForm';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -76,6 +77,16 @@ function App() {
                   <Route path="/admin/products" element={
                     <ProtectedRoute>
                       <AdminProducts />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/products/new" element={
+                    <ProtectedRoute>
+                      <AdminProductForm />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/products/:id/edit" element={
+                    <ProtectedRoute>
+                      <AdminProductForm />
                     </ProtectedRoute>
                   } />
                 </Routes>
