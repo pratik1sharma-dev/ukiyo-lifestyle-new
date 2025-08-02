@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Product, Category, Cart, User, LoadingState } from '../types';
-import { productService, categoryService, cartService } from '../services/api';
+import { productApi, categoryApi, cartApi } from '../services/api';
 
 // Product Store
 interface ProductState {
@@ -26,7 +26,7 @@ export const useProductStore = create<ProductState>((set) => ({
   fetchProducts: async (filters) => {
     set({ loading: { isLoading: true, error: null } });
     try {
-      const response = await productService.getAll(filters);
+      const response = await productApi.getProducts(filters);
       set({ 
         products: response.data.products,
         loading: { isLoading: false, error: null }
@@ -40,7 +40,7 @@ export const useProductStore = create<ProductState>((set) => ({
 
   fetchFeaturedProducts: async () => {
     try {
-      const response = await productService.getFeatured();
+      const response = await productApi.getFeaturedProducts();
       set({ featuredProducts: response.data });
     } catch (error: any) {
       console.error('Failed to fetch featured products:', error);
@@ -49,7 +49,7 @@ export const useProductStore = create<ProductState>((set) => ({
 
   fetchCategories: async () => {
     try {
-      const response = await categoryService.getAll();
+      const response = await categoryApi.getCategories();
       set({ categories: response.data });
     } catch (error: any) {
       console.error('Failed to fetch categories:', error);
@@ -59,7 +59,7 @@ export const useProductStore = create<ProductState>((set) => ({
   fetchProductBySlug: async (slug: string) => {
     set({ loading: { isLoading: true, error: null } });
     try {
-      const response = await productService.getBySlug(slug);
+      const response = await productApi.getProductBySlug(slug);
       set({ 
         currentProduct: response.data,
         loading: { isLoading: false, error: null }
@@ -97,7 +97,7 @@ export const useCartStore = create<CartState>()(
       fetchCart: async () => {
         set({ loading: { isLoading: true, error: null } });
         try {
-          const response = await cartService.get();
+          const response = await cartApi.getCart();
           set({ 
             cart: response.data,
             loading: { isLoading: false, error: null }
@@ -112,7 +112,7 @@ export const useCartStore = create<CartState>()(
       addToCart: async (productId: string, quantity: number, variant?: string) => {
         set({ loading: { isLoading: true, error: null } });
         try {
-          const response = await cartService.addItem(productId, quantity);
+          const response = await cartApi.addToCart(productId, quantity);
           set({ 
             cart: response.data,
             loading: { isLoading: false, error: null }
@@ -126,7 +126,7 @@ export const useCartStore = create<CartState>()(
 
       updateCartItem: async (itemId: string, quantity: number) => {
         try {
-          const response = await cartService.updateItem(itemId, quantity);
+          const response = await cartApi.updateCartItem(itemId, quantity);
           set({ cart: response.data });
         } catch (error: any) {
           console.error('Failed to update cart item:', error);
@@ -135,7 +135,7 @@ export const useCartStore = create<CartState>()(
 
       removeFromCart: async (itemId: string) => {
         try {
-          const response = await cartService.removeItem(itemId);
+          const response = await cartApi.removeFromCart(itemId);
           set({ cart: response.data });
         } catch (error: any) {
           console.error('Failed to remove from cart:', error);
@@ -144,7 +144,7 @@ export const useCartStore = create<CartState>()(
 
       clearCart: async () => {
         try {
-          await cartService.clear();
+          await cartApi.clearCart();
           set({ cart: null });
         } catch (error: any) {
           console.error('Failed to clear cart:', error);
