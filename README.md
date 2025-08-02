@@ -292,6 +292,7 @@ taskkill /PID <PID> /F
 ## 📚 Documentation
 
 - [Quick Start Guide](./QUICK_START.md) - Get up and running in 5 minutes
+- [Development Guidelines](./DEVELOPMENT_GUIDELINES.md) - **IMPORTANT: Read this first!**
 - [Requirements Document](./REQUIREMENTS.md) - Detailed project requirements
 - [Architecture Document](./ARCHITECTURE.md) - System architecture and technology choices
 - [Project Structure](./PROJECT_STRUCTURE.md) - Detailed folder organization
