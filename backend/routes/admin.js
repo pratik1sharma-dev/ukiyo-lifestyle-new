@@ -426,8 +426,9 @@ router.post('/products', authenticateToken, requireAdmin, upload.array('images',
         isActive: isActive === 'true',
         isFeatured: isFeatured === 'true',
         inventory: {
-          stock: parseInt(stock) || 0,
-          lowStockThreshold: parseInt(lowStockThreshold) || 5
+          quantity: parseInt(stock) || 0,
+          lowStockThreshold: parseInt(lowStockThreshold) || 5,
+          trackQuantity: true
         },
         tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
         specifications: specifications ? JSON.parse(specifications) : {},
@@ -462,8 +463,9 @@ router.post('/products', authenticateToken, requireAdmin, upload.array('images',
       isActive: isActive === 'true',
       isFeatured: isFeatured === 'true',
       inventory: {
-        stock: parseInt(stock) || 0,
-        lowStockThreshold: parseInt(lowStockThreshold) || 5
+        quantity: parseInt(stock) || 0,
+        lowStockThreshold: parseInt(lowStockThreshold) || 5,
+        trackQuantity: true
       },
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
       specifications: specifications ? JSON.parse(specifications) : {}
@@ -562,8 +564,9 @@ router.put('/products/:id', authenticateToken, requireAdmin, upload.array('image
     if (stock !== undefined || lowStockThreshold !== undefined) {
       updateData.inventory = {
         ...product.inventory,
-        ...(stock !== undefined && { stock: parseInt(stock) }),
-        ...(lowStockThreshold !== undefined && { lowStockThreshold: parseInt(lowStockThreshold) })
+        ...(stock !== undefined && { quantity: parseInt(stock) }),
+        ...(lowStockThreshold !== undefined && { lowStockThreshold: parseInt(lowStockThreshold) }),
+        trackQuantity: true
       };
     }
 
@@ -700,7 +703,7 @@ router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req, res)
       Product.countDocuments({ isActive: true }),
       Category.countDocuments(),
       Product.countDocuments({
-        $expr: { $lte: ['$inventory.stock', '$inventory.lowStockThreshold'] }
+        $expr: { $lte: ['$inventory.quantity', '$inventory.lowStockThreshold'] }
       })
     ]);
 

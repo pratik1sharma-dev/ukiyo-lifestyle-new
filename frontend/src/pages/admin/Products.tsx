@@ -384,7 +384,7 @@ const AdminProducts: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">
-                              {product.inventory.stock} units
+                              {product.inventory.quantity} units
                             </div>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockStatus.color}`}>
                               {stockStatus.status}
