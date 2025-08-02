@@ -61,7 +61,7 @@ const CartSidebar: React.FC = () => {
               <div className="flex justify-center items-center h-32">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
               </div>
-            ) : !cart || cart.items.length === 0 ? (
+            ) : !cart || !cart.items || cart.items.length === 0 ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
                   <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,21 +79,21 @@ const CartSidebar: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {cart.items.map((item) => (
+                {(cart.items || []).filter(item => item && item.product).map((item) => (
                   <div key={item._id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
                     <div className="flex-shrink-0 w-16 h-16">
                       <img
-                        src={item.product.images?.[0] || '/placeholder.jpg'}
-                        alt={item.product.name}
+                        src={item.product?.images?.[0] || '/placeholder.jpg'}
+                        alt={item.product?.name || 'Product'}
                         className="w-full h-full object-cover rounded-md"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-gray-900 truncate">
-                        {item.product.name}
+                        {item.product?.name || 'Unknown Product'}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        ₹{item.price}
+                        ₹{item.price || 0}
                       </p>
                       <div className="flex items-center space-x-2 mt-2">
                         <button
@@ -126,7 +126,7 @@ const CartSidebar: React.FC = () => {
           </div>
 
           {/* Footer */}
-          {cart && cart.items.length > 0 && (
+          {cart && cart.items && cart.items.filter(item => item && item.product).length > 0 && (
             <div className="border-t border-gray-200 p-4">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-semibold text-gray-900">Total:</span>

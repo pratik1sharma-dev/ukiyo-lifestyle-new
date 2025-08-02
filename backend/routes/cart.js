@@ -58,6 +58,15 @@ router.post('/add', authenticateToken, async (req, res) => {
     }
     
     let cart = await Cart.getOrCreateCart(userId);
+    
+    // Ensure productId is a valid ObjectId
+    if (!cart || !userId) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create or retrieve cart'
+      });
+    }
+    
     await cart.addItem(productId, quantity, null, product.discountPrice || product.price);
     
     res.json({

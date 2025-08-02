@@ -94,8 +94,13 @@ cartSchema.pre('save', function(next) {
 
 // Instance method to add item to cart
 cartSchema.methods.addItem = function(productId, quantity, variant, price) {
+  // Validate inputs
+  if (!productId) {
+    throw new Error('Product ID is required');
+  }
+  
   const existingItem = this.items.find(item => 
-    item.product.toString() === productId.toString() && 
+    item.product && item.product.toString() === productId.toString() && 
     item.variant === variant
   );
 
@@ -116,8 +121,12 @@ cartSchema.methods.addItem = function(productId, quantity, variant, price) {
 
 // Instance method to update item quantity
 cartSchema.methods.updateItemQuantity = function(productId, quantity, variant) {
+  if (!productId) {
+    throw new Error('Product ID is required');
+  }
+  
   const item = this.items.find(item => 
-    item.product.toString() === productId.toString() && 
+    item.product && item.product.toString() === productId.toString() && 
     item.variant === variant
   );
 
@@ -136,8 +145,12 @@ cartSchema.methods.updateItemQuantity = function(productId, quantity, variant) {
 
 // Instance method to remove item from cart
 cartSchema.methods.removeItem = function(productId, variant) {
+  if (!productId) {
+    throw new Error('Product ID is required');
+  }
+  
   this.items = this.items.filter(item => 
-    !(item.product.toString() === productId.toString() && item.variant === variant)
+    !(item.product && item.product.toString() === productId.toString() && item.variant === variant)
   );
   return this.save();
 };

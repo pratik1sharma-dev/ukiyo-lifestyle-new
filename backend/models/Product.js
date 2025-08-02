@@ -27,6 +27,10 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Product price is required'],
     min: [0, 'Price cannot be negative']
   },
+  discountPrice: {
+    type: Number,
+    min: [0, 'Discount price cannot be negative']
+  },
   comparePrice: {
     type: Number,
     min: [0, 'Compare price cannot be negative']

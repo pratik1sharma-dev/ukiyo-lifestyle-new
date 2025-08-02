@@ -141,7 +141,7 @@ export const useCartStore = create<CartState>()(
             
             // Check if product already exists in cart
             const existingItemIndex = currentCart.items.findIndex(item => 
-              item.product._id === productId && item.variant === variant
+              item.product && item.product._id && item.product._id === productId && item.variant === variant
             );
             
             if (existingItemIndex >= 0) {
@@ -150,31 +150,37 @@ export const useCartStore = create<CartState>()(
               currentCart.items[existingItemIndex].total = 
                 currentCart.items[existingItemIndex].price * currentCart.items[existingItemIndex].quantity;
             } else {
-                             // Add new item (we need to fetch product details)
-               try {
-                 const productResponse = await productApi.getProductById(productId);
-                 const product = productResponse.data.data;
+              // Add new item (we need to fetch product details)
+              try {
+                const productResponse = await productApi.getProductById(productId);
+                const product = productResponse.data.data;
+                
+                // Validate product data
+                if (!product || !product._id) {
+                  throw new Error('Invalid product data received');
+                }
                 
                 const newItem = {
                   _id: `guest_${Date.now()}_${Math.random()}`,
                   product: {
-                    _id: product._id,
-                    name: product.name,
-                    slug: product.slug,
-                    price: product.price,
-                    comparePrice: product.comparePrice,
-                    images: product.images,
-                    category: product.category,
-                    inStock: product.inStock
+                    _id: product._id.toString(),
+                    name: product.name || 'Unknown Product',
+                    slug: product.slug || '',
+                    price: product.price || 0,
+                    comparePrice: product.comparePrice || null,
+                    images: product.images || [],
+                    category: product.category || null,
+                    inStock: product.inStock || false
                   },
                   quantity,
-                  price: product.price,
-                  total: product.price * quantity,
+                  price: product.price || 0,
+                  total: (product.price || 0) * quantity,
                   variant: variant || null
                 };
                 
                 currentCart.items.push(newItem);
               } catch (productError) {
+                console.error('Product fetch error:', productError);
                 throw new Error('Failed to fetch product details');
               }
             }
