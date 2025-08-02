@@ -42,14 +42,13 @@ const Checkout: React.FC = () => {
 
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated or cart is empty
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: '/checkout' } } });
       return;
     }
 
-    // Redirect if cart is empty
     if (!cart || !cart.items || cart.items.length === 0) {
       navigate('/cart');
       return;
@@ -154,7 +153,10 @@ const Checkout: React.FC = () => {
 
     try {
       // Create order
-      const orderResponse = await paymentApi.createOrder(shippingAddress, paymentMethod);
+      const orderResponse = await paymentApi.createOrder(
+        shippingAddress, 
+        paymentMethod
+      );
       const { order, razorpayOrder } = orderResponse.data.data;
 
       if (paymentMethod === 'razorpay' && razorpayOrder) {
@@ -539,7 +541,7 @@ const Checkout: React.FC = () => {
                           Processing...
                         </>
                       ) : (
-                        `Place Order - ₹${cart?.totalPrice?.toLocaleString()}`
+                        `Place Order - ₹${cart?.total?.toLocaleString()}`
                       )}
                     </button>
                   </div>
@@ -592,7 +594,7 @@ const Checkout: React.FC = () => {
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between text-base font-medium">
                     <span>Total</span>
-                    <span>₹{cart?.totalPrice?.toLocaleString()}</span>
+                    <span>₹{cart?.total?.toLocaleString()}</span>
                   </div>
                 </div>
               </div>

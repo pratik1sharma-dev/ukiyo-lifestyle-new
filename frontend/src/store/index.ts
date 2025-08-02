@@ -85,6 +85,7 @@ interface CartState {
   clearCart: () => Promise<void>;
   setCart: (cart: Cart | null) => void;
   isAuthenticated: () => boolean;
+  migrateGuestCartToServer: () => Promise<void>;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -287,6 +288,32 @@ export const useCartStore = create<CartState>()(
         set({ cart });
       },
 
+      migrateGuestCartToServer: async () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          throw new Error('User must be authenticated to migrate cart');
+        }
+
+        const currentCart = get().cart;
+        if (!currentCart || !currentCart.items || currentCart.items.length === 0) {
+          return; // No guest cart to migrate
+        }
+
+        try {
+          // Add each item from guest cart to server cart
+          for (const item of currentCart.items) {
+            await cartApi.addToCart(item.product._id, item.quantity, item.variant);
+          }
+
+          // Fetch the updated server cart
+          const response = await cartApi.getCart();
+          set({ cart: response.data.data });
+        } catch (error: any) {
+          console.error('Failed to migrate guest cart to server:', error);
+          throw new Error('Failed to migrate cart items to your account');
+        }
+      },
+
       // Check if user is authenticated
       isAuthenticated: () => {
         return !!localStorage.getItem('authToken');
@@ -339,13 +366,20 @@ export const useAuthStore = create<AuthState>()(
             loading: { isLoading: false, error: null }
           });
 
-          // Fetch user's cart after successful login
+          // Migrate guest cart to server cart if needed
           try {
-            const cartResponse = await cartApi.getCart();
-            useCartStore.getState().setCart(cartResponse.data.data);
-          } catch (cartError) {
-            // Cart fetch failed, but login was successful - continue
-            console.warn('Failed to fetch user cart after login:', cartError);
+            await useCartStore.getState().migrateGuestCartToServer();
+          } catch (migrationError) {
+            // Migration failed, but login was successful - continue
+            console.warn('Failed to migrate guest cart after login:', migrationError);
+            
+            // Try to fetch user's existing cart
+            try {
+              const cartResponse = await cartApi.getCart();
+              useCartStore.getState().setCart(cartResponse.data.data);
+            } catch (cartError) {
+              console.warn('Failed to fetch user cart after login:', cartError);
+            }
           }
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Login failed';
@@ -371,6 +405,14 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             loading: { isLoading: false, error: null }
           });
+
+          // Migrate guest cart to server cart if needed
+          try {
+            await useCartStore.getState().migrateGuestCartToServer();
+          } catch (migrationError) {
+            // Migration failed, but registration was successful - continue
+            console.warn('Failed to migrate guest cart after registration:', migrationError);
+          }
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
           set({ 
