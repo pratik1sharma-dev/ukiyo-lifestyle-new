@@ -27,14 +27,9 @@ const requireAdmin = (req, res, next) => {
 
 // Cloudinary upload configuration is imported from config/cloudinary.js
 
-// Check if database is connected
-const isDatabaseConnected = () => {
-  return require('mongoose').connection.readyState === 1;
-};
 
-// Mock data storage for admin operations
-let mockProductCounter = 7; // Starting from 7 since we have 6 mock products
-let mockCategoryCounter = 5; // Starting from 5 since we have 4 mock categories
+
+
 
 // Helper function to generate slug from name
 const generateSlug = (name) => {
@@ -51,22 +46,6 @@ const generateSlug = (name) => {
 // GET /api/admin/categories - Get all categories for admin
 router.get('/categories', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    if (!isDatabaseConnected()) {
-      // Mock categories
-      const mockCategories = [
-        { _id: 'cat1', name: 'Home & Living', slug: 'home-living', description: 'Furniture and home decor items', isActive: true, createdAt: new Date('2024-01-01') },
-        { _id: 'cat2', name: 'Fashion & Accessories', slug: 'fashion-accessories', description: 'Clothing and fashion accessories', isActive: true, createdAt: new Date('2024-01-02') },
-        { _id: 'cat3', name: 'Beauty & Wellness', slug: 'beauty-wellness', description: 'Beauty and wellness products', isActive: true, createdAt: new Date('2024-01-03') },
-        { _id: 'cat4', name: 'Kitchen & Dining', slug: 'kitchen-dining', description: 'Kitchen appliances and dining essentials', isActive: true, createdAt: new Date('2024-01-04') }
-      ];
-
-      return res.json({
-        success: true,
-        message: 'Categories fetched successfully (using mock data)',
-        data: { categories: mockCategories }
-      });
-    }
-
     const categories = await Category.find().sort({ createdAt: -1 });
     res.json({
       success: true,
@@ -96,25 +75,6 @@ router.post('/categories', authenticateToken, requireAdmin, async (req, res) => 
     }
 
     const slug = generateSlug(name);
-
-    if (!isDatabaseConnected()) {
-      // Mock category creation
-      const newCategory = {
-        _id: `cat${mockCategoryCounter++}`,
-        name,
-        slug,
-        description: description || '',
-        isActive,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
-      return res.status(201).json({
-        success: true,
-        message: 'Category created successfully (using mock data)',
-        data: { category: newCategory }
-      });
-    }
 
     // Check if category with same name exists
     const existingCategory = await Category.findOne({ name: { $regex: new RegExp('^' + name + '$', 'i') } });
@@ -155,24 +115,6 @@ router.put('/categories/:id', authenticateToken, requireAdmin, async (req, res) 
     const { id } = req.params;
     const { name, description, isActive } = req.body;
 
-    if (!isDatabaseConnected()) {
-      // Mock category update
-      return res.json({
-        success: true,
-        message: 'Category updated successfully (using mock data)',
-        data: {
-          category: {
-            _id: id,
-            name: name || 'Updated Category',
-            slug: generateSlug(name || 'Updated Category'),
-            description: description || '',
-            isActive: isActive !== undefined ? isActive : true,
-            updatedAt: new Date()
-          }
-        }
-      });
-    }
-
     const updateData = {};
     if (name) {
       updateData.name = name;
@@ -209,14 +151,6 @@ router.put('/categories/:id', authenticateToken, requireAdmin, async (req, res) 
 router.delete('/categories/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-
-    if (!isDatabaseConnected()) {
-      // Mock category deletion
-      return res.json({
-        success: true,
-        message: 'Category deleted successfully (using mock data)'
-      });
-    }
 
     // Check if category has products
     const productCount = await Product.countDocuments({ category: id });
@@ -263,47 +197,6 @@ router.get('/products', authenticateToken, requireAdmin, async (req, res) => {
   });
   try {
     const { page = 1, limit = 20, category, search, status } = req.query;
-
-    if (!isDatabaseConnected()) {
-      // Mock products with admin details
-      const mockProducts = require('./products').mockProducts || [];
-      
-      let filteredProducts = [...mockProducts];
-      
-      // Apply filters
-      if (category) {
-        filteredProducts = filteredProducts.filter(p => p.category._id === category);
-      }
-      if (search) {
-        const searchLower = search.toLowerCase();
-        filteredProducts = filteredProducts.filter(p => 
-          p.name.toLowerCase().includes(searchLower) || 
-          p.description.toLowerCase().includes(searchLower)
-        );
-      }
-      if (status) {
-        filteredProducts = filteredProducts.filter(p => p.isActive === (status === 'active'));
-      }
-
-      // Pagination
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + parseInt(limit);
-      const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
-
-      return res.json({
-        success: true,
-        message: 'Products fetched successfully (using mock data)',
-        data: {
-          products: paginatedProducts,
-          pagination: {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            total: filteredProducts.length,
-            pages: Math.ceil(filteredProducts.length / limit)
-          }
-        }
-      });
-    }
 
     // Database query with filters
     let query = {};
@@ -352,25 +245,6 @@ router.get('/products', authenticateToken, requireAdmin, async (req, res) => {
 router.get('/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-
-    if (!isDatabaseConnected()) {
-      // Mock product lookup
-      const mockProducts = require('./products').mockProducts || [];
-      const product = mockProducts.find(p => p._id === id);
-      
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: 'Product not found'
-        });
-      }
-
-      return res.json({
-        success: true,
-        message: 'Product fetched successfully (using mock data)',
-        data: { product }
-      });
-    }
 
     const product = await Product.findById(id).populate('category', 'name slug');
     
@@ -431,37 +305,6 @@ router.post('/products', authenticateToken, requireAdmin, uploadAnyImages, async
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
 
     const slug = generateSlug(name);
-
-    if (!isDatabaseConnected()) {
-      // Mock product creation
-      const newProduct = {
-        _id: `${mockProductCounter++}`,
-        name,
-        slug,
-        description,
-        price: parseFloat(price),
-        discountPrice: discountPrice ? parseFloat(discountPrice) : null,
-        images: imageUrls.length > 0 ? imageUrls : ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500'],
-        category: { _id: category, name: 'Category Name', slug: 'category-slug' },
-        isActive: isActive === 'true',
-        isFeatured: isFeatured === 'true',
-        inventory: {
-          quantity: parseInt(stock) || 0,
-          lowStockThreshold: parseInt(lowStockThreshold) || 5,
-          trackQuantity: true
-        },
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-        specifications: specifications ? JSON.parse(specifications) : {},
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
-      return res.status(201).json({
-        success: true,
-        message: 'Product created successfully (using mock data)',
-        data: { product: newProduct }
-      });
-    }
 
     // Check if category exists
     const categoryDoc = await Category.findById(category);
@@ -528,35 +371,7 @@ router.put('/products/:id', authenticateToken, requireAdmin, uploadAnyImages, as
       removeImages // Array of image URLs to remove
     } = req.body;
 
-    if (!isDatabaseConnected()) {
-      // Mock product update
-      const updatedProduct = {
-        _id: id,
-        name: name || 'Updated Product',
-        slug: generateSlug(name || 'Updated Product'),
-        description: description || 'Updated description',
-        price: price ? parseFloat(price) : 10000,
-        discountPrice: discountPrice ? parseFloat(discountPrice) : null,
-        images: req.files && req.files.length > 0 
-          ? req.files.map(file => file.path)
-          : ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500'],
-        category: { _id: category || 'cat1', name: 'Updated Category', slug: 'updated-category' },
-        isActive: isActive !== undefined ? (isActive === 'true') : true,
-        isFeatured: isFeatured !== undefined ? (isFeatured === 'true') : false,
-                 inventory: {
-           quantity: stock ? parseInt(stock) : 10,
-           lowStockThreshold: lowStockThreshold ? parseInt(lowStockThreshold) : 5,
-           trackQuantity: true
-         },
-        updatedAt: new Date()
-      };
-
-      return res.json({
-        success: true,
-        message: 'Product updated successfully (using mock data)',
-        data: { product: updatedProduct }
-      });
-    }
+    
 
     const product = await Product.findById(id);
     if (!product) {
@@ -648,13 +463,6 @@ router.delete('/products/:id', authenticateToken, requireAdmin, async (req, res)
   try {
     const { id } = req.params;
 
-    if (!isDatabaseConnected()) {
-      return res.json({
-        success: true,
-        message: 'Product deleted successfully (using mock data)'
-      });
-    }
-
     const product = await Product.findByIdAndDelete(id);
     
     if (!product) {
@@ -698,22 +506,6 @@ router.delete('/products/:id', authenticateToken, requireAdmin, async (req, res)
 // GET /api/admin/dashboard/stats - Get dashboard statistics
 router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    if (!isDatabaseConnected()) {
-      // Mock statistics
-      return res.json({
-        success: true,
-        message: 'Dashboard stats fetched successfully (using mock data)',
-        data: {
-          totalProducts: 6,
-          activeProducts: 6,
-          totalCategories: 4,
-          lowStockProducts: 2,
-          totalOrders: 1,
-          recentOrders: 1
-        }
-      });
-    }
-
     const [
       totalProducts,
       activeProducts,
