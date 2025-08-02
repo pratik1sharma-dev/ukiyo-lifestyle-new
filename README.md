@@ -63,8 +63,8 @@ Before you begin, ensure you have the following installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/ukiyo-lifestyle.git
-cd ukiyo-lifestyle
+git clone https://github.com/pratik1sharma-dev/ukiyo-lifestyle-new.git
+cd ukiyo-lifestyle-new
 ```
 
 ### 2. Environment Setup
@@ -142,6 +142,8 @@ VITE v4.5.14  ready in 335 ms
 - **Frontend:** http://localhost:5173
 - **Backend API:** http://localhost:5000
 - **API Health Check:** http://localhost:5000/health
+
+**✅ Both services are currently running and ready for development!**
 
 ### 6. Test API Endpoints
 ```bash
