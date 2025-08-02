@@ -370,6 +370,54 @@ router.get('/products', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// GET /api/admin/products/:id - Get single product for admin
+router.get('/products/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!isDatabaseConnected()) {
+      // Mock product lookup
+      const mockProducts = require('./products').mockProducts || [];
+      const product = mockProducts.find(p => p._id === id);
+      
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: 'Product not found'
+        });
+      }
+
+      return res.json({
+        success: true,
+        message: 'Product fetched successfully (using mock data)',
+        data: { product }
+      });
+    }
+
+    const product = await Product.findById(id).populate('category', 'name slug');
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Product fetched successfully',
+      data: { product }
+    });
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch product',
+      error: error.message
+    });
+  }
+});
+
 // POST /api/admin/products - Create new product
 router.post('/products', authenticateToken, requireAdmin, upload.array('images', 5), async (req, res) => {
   try {

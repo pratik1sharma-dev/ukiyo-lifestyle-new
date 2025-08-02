@@ -202,6 +202,10 @@ export const adminApi = {
     return api.get(`/admin/products?${searchParams.toString()}`);
   },
 
+  getProduct: async (id: string) => {
+    return api.get(`/admin/products/${id}`);
+  },
+
   createProduct: async (formData: FormData) => {
     return api.post('/admin/products', formData, {
       headers: {

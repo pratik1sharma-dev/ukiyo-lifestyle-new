@@ -69,10 +69,8 @@ const AdminProductForm: React.FC = () => {
   const fetchProduct = async (productId: string) => {
     try {
       setLoading(true);
-      // For now, we'll use the products list endpoint to get product details
-      // In a real app, you'd have a specific endpoint for single product
-      const response = await adminApi.getProducts({ search: productId });
-      const product = response.data.data.products.find((p: any) => p._id === productId);
+      const response = await adminApi.getProduct(productId);
+      const product = response.data.data.product;
       
       if (product) {
         setFormData({
