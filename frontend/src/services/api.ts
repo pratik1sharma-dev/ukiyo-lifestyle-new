@@ -133,4 +133,37 @@ export const authApi = {
   },
 };
 
+// Payment API
+export const paymentApi = {
+  // Create order
+  createOrder: async (shippingAddress: any, paymentMethod: string = 'razorpay') => {
+    return api.post('/payment/create-order', { shippingAddress, paymentMethod });
+  },
+
+  // Verify payment
+  verifyPayment: async (paymentData: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+    order_id: string;
+  }) => {
+    return api.post('/payment/verify', paymentData);
+  },
+
+  // Get user orders
+  getOrders: async (page: number = 1, limit: number = 10, status?: string) => {
+    const params = new URLSearchParams();
+    params.append('page', page.toString());
+    params.append('limit', limit.toString());
+    if (status) params.append('status', status);
+
+    return api.get(`/payment/orders?${params.toString()}`);
+  },
+
+  // Get specific order
+  getOrder: async (orderId: string) => {
+    return api.get(`/payment/orders/${orderId}`);
+  },
+};
+
 export default api;

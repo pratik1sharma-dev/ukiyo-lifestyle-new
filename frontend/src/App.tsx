@@ -11,6 +11,8 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -37,6 +39,16 @@ function App() {
                   <Route path="/profile" element={
                     <ProtectedRoute>
                       <Profile />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/checkout" element={
+                    <ProtectedRoute>
+                      <Checkout />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/order-success/:orderId" element={
+                    <ProtectedRoute>
+                      <OrderSuccess />
                     </ProtectedRoute>
                   } />
                   <Route path="/orders" element={

@@ -60,12 +60,14 @@ const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const cartRoutes = require('./routes/cart');
 const { router: authRoutes } = require('./routes/auth');
+const paymentRoutes = require('./routes/payment');
 
 // Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -101,4 +103,7 @@ app.listen(PORT, () => {
   console.log(`   - GET  /api/categories`);
   console.log(`   - GET  /api/cart`);
   console.log(`   - POST /api/cart/add`);
+  console.log(`   - POST /api/payment/create-order`);
+  console.log(`   - POST /api/payment/verify`);
+  console.log(`   - GET  /api/payment/orders`);
 }); 

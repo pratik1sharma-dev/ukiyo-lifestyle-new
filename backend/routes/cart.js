@@ -382,4 +382,6 @@ router.delete('/clear', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router; 
+// Export mockCarts for use in other modules
+module.exports = router;
+module.exports.mockCarts = mockCarts; 
