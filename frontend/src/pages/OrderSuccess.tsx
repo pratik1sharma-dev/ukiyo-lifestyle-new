@@ -149,7 +149,7 @@ const OrderSuccess: React.FC = () => {
                 {order.items.map((item: any, index: number) => (
                   <div key={index} className="flex items-center">
                     <img
-                      src={item.productImage || '/placeholder-image.jpg'}
+                      src={item.productImage || '/images/placeholders/placeholder-image.svg'}
                       alt={item.productName}
                       className="w-16 h-16 object-cover rounded-lg"
                     />

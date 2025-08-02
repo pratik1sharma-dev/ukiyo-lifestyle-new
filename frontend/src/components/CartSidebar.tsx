@@ -83,7 +83,7 @@ const CartSidebar: React.FC = () => {
                   <div key={item._id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
                     <div className="flex-shrink-0 w-16 h-16">
                       <img
-                        src={item.product?.images?.[0] || '/placeholder.jpg'}
+                                                        src={item.product?.images?.[0] || '/images/placeholders/placeholder-product.svg'}
                         alt={item.product?.name || 'Product'}
                         className="w-full h-full object-cover rounded-md"
                       />

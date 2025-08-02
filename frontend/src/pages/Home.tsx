@@ -68,7 +68,7 @@ const Home: React.FC = () => {
                   <Link to={`/products/${product.slug}`}>
                     <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square">
                       <img
-                        src={product.images[0] || '/placeholder-product.jpg'}
+                        src={product.images[0] || '/images/placeholders/placeholder-product.svg'}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

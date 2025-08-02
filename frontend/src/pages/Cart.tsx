@@ -116,7 +116,7 @@ const Cart: React.FC = () => {
                   <Link to={`/products/${item.product.slug}`} className="flex-shrink-0">
                     <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
                       <img
-                        src={item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/placeholder-product.jpg'}
+                        src={item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/images/placeholders/placeholder-product.svg'}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                       />

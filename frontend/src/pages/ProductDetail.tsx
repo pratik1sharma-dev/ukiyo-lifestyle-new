@@ -93,7 +93,7 @@ const ProductDetail: React.FC = () => {
             {/* Main Image */}
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={product.images[selectedImage] || '/placeholder-product.jpg'}
+                src={product.images[selectedImage] || '/images/placeholders/placeholder-product.svg'}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
