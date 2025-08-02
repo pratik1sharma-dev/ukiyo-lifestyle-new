@@ -59,8 +59,10 @@ app.get('/health', (req, res) => {
 const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const cartRoutes = require('./routes/cart');
+const { router: authRoutes } = require('./routes/auth');
 
 // Use routes
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
@@ -90,6 +92,9 @@ app.listen(PORT, () => {
   console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API URL: http://localhost:${PORT}`);
   console.log(`📋 Available endpoints:`);
+  console.log(`   - POST /api/auth/register`);
+  console.log(`   - POST /api/auth/login`);
+  console.log(`   - GET  /api/auth/profile`);
   console.log(`   - GET  /api/products`);
   console.log(`   - GET  /api/products/featured`);
   console.log(`   - GET  /api/products/:slug`);

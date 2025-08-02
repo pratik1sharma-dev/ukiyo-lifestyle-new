@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Product, Category, Cart, User, LoadingState } from '../types';
-import { productApi, categoryApi, cartApi } from '../services/api';
+import { productApi, categoryApi, cartApi, authApi } from '../services/api';
 
 // Product Store
 interface ProductState {
@@ -180,33 +180,51 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       loading: { isLoading: false, error: null },
 
-      login: async (_email: string, _password: string) => {
+      login: async (email: string, password: string) => {
         set({ loading: { isLoading: true, error: null } });
         try {
-          // TODO: Implement login API call
-          console.log('Login functionality to be implemented');
+          const response = await authApi.login(email, password);
+          const { user, token, refreshToken } = response.data.data;
+          
+          // Store tokens
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('refreshToken', refreshToken);
+          
           set({ 
+            user,
+            isAuthenticated: true,
             loading: { isLoading: false, error: null }
           });
         } catch (error: any) {
+          const errorMessage = error.response?.data?.message || error.message || 'Login failed';
           set({ 
-            loading: { isLoading: false, error: error.message || 'Login failed' }
+            loading: { isLoading: false, error: errorMessage }
           });
+          throw new Error(errorMessage);
         }
       },
 
-      register: async (_userData: any) => {
+      register: async (userData: { firstName: string; lastName: string; email: string; password: string; phone?: string }) => {
         set({ loading: { isLoading: true, error: null } });
         try {
-          // TODO: Implement register API call
-          console.log('Register functionality to be implemented');
+          const response = await authApi.register(userData);
+          const { user, token, refreshToken } = response.data.data;
+          
+          // Store tokens
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('refreshToken', refreshToken);
+          
           set({ 
+            user,
+            isAuthenticated: true,
             loading: { isLoading: false, error: null }
           });
         } catch (error: any) {
+          const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
           set({ 
-            loading: { isLoading: false, error: error.message || 'Registration failed' }
+            loading: { isLoading: false, error: errorMessage }
           });
+          throw new Error(errorMessage);
         }
       },
 
