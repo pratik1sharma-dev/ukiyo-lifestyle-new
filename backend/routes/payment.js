@@ -22,6 +22,150 @@ const isDatabaseConnected = () => {
 let mockOrders = new Map();
 let mockOrderCounter = 1;
 
+// Initialize with sample orders for testing
+const initializeMockOrders = () => {
+  if (mockOrders.size === 0) {
+    // Sample order 1 - Delivered
+    const order1 = {
+      _id: 'mock-order-1',
+      orderNumber: 'UK24010001',
+      user: 'user1', // Demo user ID
+      email: 'demo@ukiyo.com',
+      items: [{
+        _id: 'item-1',
+        product: 'product1',
+        productName: 'Modern Minimalist Sofa',
+        productSlug: 'modern-minimalist-sofa',
+        productImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400',
+        quantity: 1,
+        price: 45000,
+        totalPrice: 45000
+      }],
+      orderStatus: 'delivered',
+      paymentStatus: 'paid',
+      paymentMethod: 'razorpay',
+      paymentDetails: {
+        razorpayOrderId: 'order_sample123',
+        razorpayPaymentId: 'pay_sample123'
+      },
+      pricing: {
+        subtotal: 45000,
+        discount: 0,
+        shipping: 0,
+        tax: 0,
+        total: 45000
+      },
+      shippingAddress: {
+        firstName: 'Demo',
+        lastName: 'User',
+        street: '123 Sample Street',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        pincode: '400001',
+        phone: '+91-9876543210',
+        email: 'demo@ukiyo.com'
+      },
+      createdAt: new Date('2024-01-15T10:30:00Z').toISOString(),
+      updatedAt: new Date('2024-01-18T14:20:00Z').toISOString()
+    };
+
+    // Sample order 2 - Shipped
+    const order2 = {
+      _id: 'mock-order-2',
+      orderNumber: 'UK24010002',
+      user: 'user1',
+      email: 'demo@ukiyo.com',
+      items: [{
+        _id: 'item-2',
+        product: 'product2',
+        productName: 'Designer Table Lamp',
+        productSlug: 'designer-table-lamp',
+        productImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+        quantity: 2,
+        price: 2500,
+        totalPrice: 5000
+      }],
+      orderStatus: 'shipped',
+      paymentStatus: 'paid',
+      paymentMethod: 'razorpay',
+      paymentDetails: {
+        razorpayOrderId: 'order_sample456',
+        razorpayPaymentId: 'pay_sample456'
+      },
+      pricing: {
+        subtotal: 5000,
+        discount: 500,
+        shipping: 200,
+        tax: 0,
+        total: 4700
+      },
+      shippingAddress: {
+        firstName: 'Demo',
+        lastName: 'User',
+        street: '123 Sample Street',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        pincode: '400001',
+        phone: '+91-9876543210',
+        email: 'demo@ukiyo.com'
+      },
+      createdAt: new Date('2024-01-20T09:15:00Z').toISOString(),
+      updatedAt: new Date('2024-01-22T11:30:00Z').toISOString()
+    };
+
+    // Sample order 3 - Pending
+    const order3 = {
+      _id: 'mock-order-3',
+      orderNumber: 'UK24010003',
+      user: 'user1',
+      email: 'demo@ukiyo.com',
+      items: [{
+        _id: 'item-3',
+        product: 'product3',
+        productName: 'Vintage Wall Art',
+        productSlug: 'vintage-wall-art',
+        productImage: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
+        quantity: 1,
+        price: 3500,
+        totalPrice: 3500
+      }],
+      orderStatus: 'pending',
+      paymentStatus: 'paid',
+      paymentMethod: 'razorpay',
+      paymentDetails: {
+        razorpayOrderId: 'order_sample789',
+        razorpayPaymentId: 'pay_sample789'
+      },
+      pricing: {
+        subtotal: 3500,
+        discount: 0,
+        shipping: 150,
+        tax: 0,
+        total: 3650
+      },
+      shippingAddress: {
+        firstName: 'Demo',
+        lastName: 'User',
+        street: '123 Sample Street',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        pincode: '400001',
+        phone: '+91-9876543210',
+        email: 'demo@ukiyo.com'
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    mockOrders.set('mock-order-1', order1);
+    mockOrders.set('mock-order-2', order2);
+    mockOrders.set('mock-order-3', order3);
+  }
+};
+
+// Initialize mock orders
+initializeMockOrders();
+
 // Helper function to generate mock order number
 const generateMockOrderNumber = () => {
   const date = new Date();
