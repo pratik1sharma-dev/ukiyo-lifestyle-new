@@ -62,6 +62,11 @@ export const productApi = {
     return api.get(`/products/${slug}`);
   },
 
+  // Get product by ID
+  getProductById: async (id: string): Promise<ApiResponse<Product>> => {
+    return api.get(`/products/id/${id}`);
+  },
+
   // Search products
   searchProducts: async (query: string, page = 1, limit = 12): Promise<ApiResponse<{ products: Product[]; pagination: any }>> => {
     return api.get(`/products/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);

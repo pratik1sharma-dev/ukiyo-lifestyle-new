@@ -46,9 +46,11 @@ const Products: React.FC = () => {
   const handleAddToCart = async (productId: string) => {
     try {
       await addToCart(productId, 1);
-      // You could add a toast notification here
-    } catch (error) {
+      // Show success message
+      alert('Product added to cart successfully!');
+    } catch (error: any) {
       console.error('Failed to add to cart:', error);
+      alert(error.message || 'Failed to add product to cart');
     }
   };
 

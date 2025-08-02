@@ -84,6 +84,7 @@ interface CartState {
   removeFromCart: (productId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   setCart: (cart: Cart | null) => void;
+  isAuthenticated: () => boolean;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -99,11 +100,21 @@ export const useCartStore = create<CartState>()(
       fetchCart: async () => {
         set({ loading: { isLoading: true, error: null } });
         try {
-          const response = await cartApi.getCart();
-          set({ 
-            cart: response.data.data,
-            loading: { isLoading: false, error: null }
-          });
+          const token = localStorage.getItem('authToken');
+          
+          if (token) {
+            // User is authenticated - fetch from server
+            const response = await cartApi.getCart();
+            set({ 
+              cart: response.data.data,
+              loading: { isLoading: false, error: null }
+            });
+          } else {
+            // Guest user - cart is already in localStorage via persist
+            set({ 
+              loading: { isLoading: false, error: null }
+            });
+          }
         } catch (error: any) {
           set({ 
             loading: { isLoading: false, error: error.message || 'Failed to fetch cart' }
@@ -114,39 +125,158 @@ export const useCartStore = create<CartState>()(
       addToCart: async (productId: string, quantity: number, variant?: string) => {
         set({ loading: { isLoading: true, error: null } });
         try {
-          const response = await cartApi.addToCart(productId, quantity);
-          set({ 
-            cart: response.data.data,
-            loading: { isLoading: false, error: null }
-          });
+          const token = localStorage.getItem('authToken');
+          
+          if (token) {
+            // User is authenticated - use server cart
+            const response = await cartApi.addToCart(productId, quantity, variant);
+            set({ 
+              cart: response.data.data,
+              loading: { isLoading: false, error: null }
+            });
+          } else {
+            // Guest user - use local cart
+            const currentCart = get().cart || { items: [], subtotal: 0, tax: 0, shipping: 0, total: 0, itemCount: 0 };
+            
+            // Check if product already exists in cart
+            const existingItemIndex = currentCart.items.findIndex(item => 
+              item.product._id === productId && item.variant === variant
+            );
+            
+            if (existingItemIndex >= 0) {
+              // Update existing item quantity
+              currentCart.items[existingItemIndex].quantity += quantity;
+              currentCart.items[existingItemIndex].total = 
+                currentCart.items[existingItemIndex].price * currentCart.items[existingItemIndex].quantity;
+            } else {
+                             // Add new item (we need to fetch product details)
+               try {
+                 const productResponse = await productApi.getProductById(productId);
+                 const product = productResponse.data.data;
+                
+                const newItem = {
+                  _id: `guest_${Date.now()}_${Math.random()}`,
+                  product: {
+                    _id: product._id,
+                    name: product.name,
+                    slug: product.slug,
+                    price: product.price,
+                    comparePrice: product.comparePrice,
+                    images: product.images,
+                    category: product.category,
+                    inStock: product.inStock
+                  },
+                  quantity,
+                  price: product.price,
+                  total: product.price * quantity,
+                  variant: variant || null
+                };
+                
+                currentCart.items.push(newItem);
+              } catch (productError) {
+                throw new Error('Failed to fetch product details');
+              }
+            }
+            
+            // Recalculate cart totals
+            currentCart.subtotal = currentCart.items.reduce((sum, item) => sum + item.total, 0);
+            currentCart.tax = currentCart.subtotal * 0.18; // 18% GST
+            currentCart.shipping = currentCart.subtotal >= 1000 ? 0 : 100; // Free shipping over ₹1000
+            currentCart.total = currentCart.subtotal + currentCart.tax + currentCart.shipping;
+            currentCart.itemCount = currentCart.items.reduce((sum, item) => sum + item.quantity, 0);
+            
+            set({ 
+              cart: currentCart,
+              loading: { isLoading: false, error: null }
+            });
+          }
+          
+          // Show success feedback
+          console.log('Product added to cart successfully');
+          return { success: true };
         } catch (error: any) {
+          const errorMessage = error.message || 'Failed to add to cart';
           set({ 
-            loading: { isLoading: false, error: error.message || 'Failed to add to cart' }
+            loading: { isLoading: false, error: errorMessage }
           });
+          throw error; // Re-throw to handle in component
         }
       },
 
-      updateCartItem: async (productId: string, quantity: number) => {
+      updateCartItem: async (itemId: string, quantity: number) => {
         try {
-          const response = await cartApi.updateCartItem(productId, quantity);
-          set({ cart: response.data.data });
+          const token = localStorage.getItem('authToken');
+          
+          if (token) {
+            // User is authenticated - use server cart
+            const response = await cartApi.updateCartItem(itemId, quantity);
+            set({ cart: response.data.data });
+          } else {
+            // Guest user - update local cart
+            const currentCart = get().cart;
+            if (!currentCart) return;
+            
+            const itemIndex = currentCart.items.findIndex(item => item._id === itemId);
+            if (itemIndex >= 0) {
+              currentCart.items[itemIndex].quantity = quantity;
+              currentCart.items[itemIndex].total = currentCart.items[itemIndex].price * quantity;
+              
+              // Recalculate cart totals
+              currentCart.subtotal = currentCart.items.reduce((sum, item) => sum + item.total, 0);
+              currentCart.tax = currentCart.subtotal * 0.18;
+              currentCart.shipping = currentCart.subtotal >= 1000 ? 0 : 100;
+              currentCart.total = currentCart.subtotal + currentCart.tax + currentCart.shipping;
+              currentCart.itemCount = currentCart.items.reduce((sum, item) => sum + item.quantity, 0);
+              
+              set({ cart: { ...currentCart } });
+            }
+          }
         } catch (error: any) {
           console.error('Failed to update cart item:', error);
+          throw error;
         }
       },
 
-      removeFromCart: async (productId: string) => {
+      removeFromCart: async (itemId: string) => {
         try {
-          const response = await cartApi.removeFromCart(productId);
-          set({ cart: response.data.data });
+          const token = localStorage.getItem('authToken');
+          
+          if (token) {
+            // User is authenticated - use server cart
+            const response = await cartApi.removeFromCart(itemId);
+            set({ cart: response.data.data });
+          } else {
+            // Guest user - remove from local cart
+            const currentCart = get().cart;
+            if (!currentCart) return;
+            
+            currentCart.items = currentCart.items.filter(item => item._id !== itemId);
+            
+            // Recalculate cart totals
+            currentCart.subtotal = currentCart.items.reduce((sum, item) => sum + item.total, 0);
+            currentCart.tax = currentCart.subtotal * 0.18;
+            currentCart.shipping = currentCart.subtotal >= 1000 ? 0 : 100;
+            currentCart.total = currentCart.subtotal + currentCart.tax + currentCart.shipping;
+            currentCart.itemCount = currentCart.items.reduce((sum, item) => sum + item.quantity, 0);
+            
+            set({ cart: currentCart.items.length > 0 ? currentCart : null });
+          }
         } catch (error: any) {
           console.error('Failed to remove from cart:', error);
+          throw error;
         }
       },
 
       clearCart: async () => {
         try {
-          await cartApi.clearCart();
+          const token = localStorage.getItem('authToken');
+          
+          if (token) {
+            // User is authenticated - clear server cart
+            await cartApi.clearCart();
+          }
+          
+          // Clear local cart for both authenticated and guest users
           set({ cart: null });
         } catch (error: any) {
           console.error('Failed to clear cart:', error);
@@ -155,6 +285,11 @@ export const useCartStore = create<CartState>()(
 
       setCart: (cart: Cart | null) => {
         set({ cart });
+      },
+
+      // Check if user is authenticated
+      isAuthenticated: () => {
+        return !!localStorage.getItem('authToken');
       },
 
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),

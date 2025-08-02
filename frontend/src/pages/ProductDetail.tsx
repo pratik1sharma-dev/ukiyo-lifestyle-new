@@ -29,11 +29,11 @@ const ProductDetail: React.FC = () => {
     
     try {
       await addToCart(currentProduct._id, quantity, selectedVariant);
-      // You could add a toast notification here
-      alert('Product added to cart!');
-    } catch (error) {
+      // Show success message
+      alert('Product added to cart successfully!');
+    } catch (error: any) {
       console.error('Failed to add to cart:', error);
-      alert('Failed to add product to cart');
+      alert(error.message || 'Failed to add product to cart');
     }
   };
 
