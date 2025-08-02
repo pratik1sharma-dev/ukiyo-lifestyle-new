@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import AdminDashboard from './pages/admin/Dashboard';
+import AdminProducts from './pages/admin/Products';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -70,6 +71,11 @@ function App() {
                   <Route path="/admin/dashboard" element={
                     <ProtectedRoute>
                       <AdminDashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/products" element={
+                    <ProtectedRoute>
+                      <AdminProducts />
                     </ProtectedRoute>
                   } />
                 </Routes>
