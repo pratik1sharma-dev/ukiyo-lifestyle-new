@@ -1,0 +1,30 @@
+{
+  "name": "ukiyo-lifestyle",
+  "version": "1.0.0",
+  "description": "Ukiyo Lifestyle E-commerce Platform",
+  "main": "backend/server.js",
+  "scripts": {
+    "install-backend": "cd backend && npm install",
+    "start-backend": "cd backend && npm start",
+    "dev-backend": "cd backend && npm run dev",
+    "build-backend": "cd backend && npm run build",
+    "install-frontend": "cd frontend && npm install",
+    "build-frontend": "cd frontend && npm run build",
+    "dev-frontend": "cd frontend && npm run dev",
+    "postinstall": "npm run install-backend"
+  },
+  "keywords": [
+    "ecommerce",
+    "lifestyle",
+    "ukiyo",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "Ukiyo Lifestyle Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+} 
