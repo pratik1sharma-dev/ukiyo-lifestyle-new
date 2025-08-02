@@ -33,6 +33,18 @@ const userSchema = new mongoose.Schema({
     trim: true,
     match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number']
   },
+  isPhoneVerified: {
+    type: Boolean,
+    default: false
+  },
+  googleId: {
+    type: String,
+    sparse: true,
+    unique: true
+  },
+  profilePicture: {
+    type: String
+  },
   addresses: [{
     type: {
       type: String,
