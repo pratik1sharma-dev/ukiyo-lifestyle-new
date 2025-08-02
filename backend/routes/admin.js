@@ -543,10 +543,11 @@ router.put('/products/:id', authenticateToken, requireAdmin, uploadAnyImages, as
         category: { _id: category || 'cat1', name: 'Updated Category', slug: 'updated-category' },
         isActive: isActive !== undefined ? (isActive === 'true') : true,
         isFeatured: isFeatured !== undefined ? (isFeatured === 'true') : false,
-        inventory: {
-          stock: stock ? parseInt(stock) : 10,
-          lowStockThreshold: lowStockThreshold ? parseInt(lowStockThreshold) : 5
-        },
+                 inventory: {
+           quantity: stock ? parseInt(stock) : 10,
+           lowStockThreshold: lowStockThreshold ? parseInt(lowStockThreshold) : 5,
+           trackQuantity: true
+         },
         updatedAt: new Date()
       };
 

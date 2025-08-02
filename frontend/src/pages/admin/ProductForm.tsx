@@ -81,7 +81,7 @@ const AdminProductForm: React.FC = () => {
           category: product.category._id || '',
           isActive: product.isActive ?? true,
           isFeatured: product.isFeatured ?? false,
-          stock: product.inventory?.stock?.toString() || '',
+          stock: product.inventory?.quantity?.toString() || '',
           lowStockThreshold: product.inventory?.lowStockThreshold?.toString() || '5',
           tags: product.tags?.join(', ') || '',
           specifications: product.specifications ? JSON.stringify(product.specifications, null, 2) : ''
