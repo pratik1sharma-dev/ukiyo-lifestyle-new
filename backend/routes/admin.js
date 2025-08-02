@@ -7,12 +7,21 @@ const { upload, deleteImage, extractPublicId } = require('../config/cloudinary')
 
 // Admin middleware to check if user is admin
 const requireAdmin = (req, res, next) => {
+  console.log('🔧 Admin Middleware:', {
+    hasUser: !!req.user,
+    userRole: req.user?.role,
+    isAdmin: req.user?.role === 'admin',
+    timestamp: new Date().toISOString()
+  });
+
   if (!req.user || req.user.role !== 'admin') {
+    console.log('❌ Admin access denied:', { userRole: req.user?.role });
     return res.status(403).json({
       success: false,
       message: 'Admin access required'
     });
   }
+  console.log('✅ Admin access granted');
   next();
 };
 
@@ -247,6 +256,11 @@ router.delete('/categories/:id', authenticateToken, requireAdmin, async (req, re
 
 // GET /api/admin/products - Get all products for admin
 router.get('/products', authenticateToken, requireAdmin, async (req, res) => {
+  console.log('🔧 Admin Products Request:', {
+    user: req.user ? { id: req.user._id, email: req.user.email, role: req.user.role } : 'No user',
+    headers: req.headers.authorization ? 'Token present' : 'No token',
+    timestamp: new Date().toISOString()
+  });
   try {
     const { page = 1, limit = 20, category, search, status } = req.query;
 

@@ -110,10 +110,18 @@ const generateRefreshToken = (userId) => {
 // Auth middleware
 const authenticateToken = async (req, res, next) => {
   try {
+    console.log('🔧 Auth Middleware:', {
+      path: req.path,
+      method: req.method,
+      hasAuthHeader: !!req.headers.authorization,
+      timestamp: new Date().toISOString()
+    });
+
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
+      console.log('❌ No token provided');
       return res.status(401).json({
         success: false,
         message: 'Access token required'
