@@ -16,14 +16,21 @@ const app = express();
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? [
-        'https://your-domain.vercel.app', // Replace with your Vercel domain
-        'https://your-custom-domain.com' // Replace with your custom domain if any
-      ]
+        'https://ukiyo-lifestyle-new.vercel.app', // Your Vercel domain
+        process.env.CORS_ORIGIN // Additional origins from environment variable
+      ].filter(Boolean) // Remove any undefined values
     : ['http://localhost:3000', 'http://localhost:5173'], // Development origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
+// Debug CORS configuration
+console.log('🔧 CORS Configuration:', {
+  nodeEnv: process.env.NODE_ENV,
+  corsOrigin: process.env.CORS_ORIGIN,
+  allowedOrigins: corsOptions.origin
+});
 
 app.use(cors(corsOptions));
 app.use(express.json());
