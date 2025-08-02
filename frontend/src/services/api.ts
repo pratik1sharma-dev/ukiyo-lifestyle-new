@@ -1,9 +1,12 @@
 import axios from 'axios';
 import type { ApiResponse, Product, Category, Cart, ProductFilters, PaginationParams } from '../types';
 
+// Configure base URL for different environments
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: `${API_BASE_URL}/api`,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
