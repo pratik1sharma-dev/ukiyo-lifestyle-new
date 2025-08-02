@@ -79,9 +79,10 @@ interface CartState {
   loading: LoadingState;
   fetchCart: () => Promise<void>;
   addToCart: (productId: string, quantity: number, variant?: string) => Promise<void>;
-  updateCartItem: (itemId: string, quantity: number) => Promise<void>;
-  removeFromCart: (itemId: string) => Promise<void>;
+  updateCartItem: (productId: string, quantity: number) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>;
   clearCart: () => Promise<void>;
+  setCart: (cart: Cart | null) => void;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -124,18 +125,18 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      updateCartItem: async (itemId: string, quantity: number) => {
+      updateCartItem: async (productId: string, quantity: number) => {
         try {
-          const response = await cartApi.updateCartItem(itemId, quantity);
+          const response = await cartApi.updateCartItem(productId, quantity);
           set({ cart: response.data });
         } catch (error: any) {
           console.error('Failed to update cart item:', error);
         }
       },
 
-      removeFromCart: async (itemId: string) => {
+      removeFromCart: async (productId: string) => {
         try {
-          const response = await cartApi.removeFromCart(itemId);
+          const response = await cartApi.removeFromCart(productId);
           set({ cart: response.data });
         } catch (error: any) {
           console.error('Failed to remove from cart:', error);
@@ -149,6 +150,10 @@ export const useCartStore = create<CartState>()(
         } catch (error: any) {
           console.error('Failed to clear cart:', error);
         }
+      },
+
+      setCart: (cart: Cart | null) => {
+        set({ cart });
       },
 
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
@@ -197,6 +202,15 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             loading: { isLoading: false, error: null }
           });
+
+          // Fetch user's cart after successful login
+          try {
+            const cartResponse = await cartApi.getCart();
+            useCartStore.getState().setCart(cartResponse.data);
+          } catch (cartError) {
+            // Cart fetch failed, but login was successful - continue
+            console.warn('Failed to fetch user cart after login:', cartError);
+          }
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Login failed';
           set({ 
@@ -266,6 +280,15 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             loading: { isLoading: false, error: null }
           });
+
+          // Fetch user's cart after auth restoration
+          try {
+            const cartResponse = await cartApi.getCart();
+            useCartStore.getState().setCart(cartResponse.data);
+          } catch (cartError) {
+            // Cart fetch failed, but auth was successful - continue
+            console.warn('Failed to fetch user cart after auth restoration:', cartError);
+          }
         } catch (error: any) {
           // Token is invalid, clear it
           localStorage.removeItem('authToken');
@@ -282,6 +305,9 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
         set({ user: null, isAuthenticated: false });
+        
+        // Clear user's cart on logout
+        useCartStore.getState().setCart(null);
       },
 
       setUser: (user: User | null) => {
