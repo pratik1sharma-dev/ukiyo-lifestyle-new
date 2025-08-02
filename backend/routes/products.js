@@ -266,4 +266,6 @@ router.get('/:slug', async (req, res) => {
   }
 });
 
-module.exports = router; 
+// Export mockProducts for use in admin routes
+module.exports = router;
+module.exports.mockProducts = mockProducts; 
