@@ -61,13 +61,13 @@ const createMockOrder = (userId, cartData, shippingAddress, paymentMethod = 'raz
     pricing: {
       subtotal: cartData.subtotal,
       discount: 0,
-      shippingCost: cartData.shipping,
-      tax: cartData.tax,
-      total: cartData.totalPrice
+      shippingCost: 0, // No shipping fees
+      tax: 0, // GST is already included in prices
+      total: cartData.subtotal // Total equals subtotal since tax and shipping are 0
     },
     shipping: {
       method: 'standard',
-      cost: cartData.shipping,
+      cost: 0, // No shipping fees
       estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
     },
     notes: {
@@ -226,13 +226,13 @@ router.post('/create-order', authenticateToken, async (req, res) => {
       pricing: {
         subtotal: cart.subtotal,
         discount: 0,
-        shippingCost: cart.shipping,
-        tax: cart.tax,
-        total: cart.total
+        shippingCost: 0, // No shipping fees
+        tax: 0, // GST is already included in prices
+        total: cart.subtotal // Total equals subtotal since tax and shipping are 0
       },
       shipping: {
         method: 'standard',
-        cost: cart.shipping,
+        cost: 0, // No shipping fees
         estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       },
       notes: {

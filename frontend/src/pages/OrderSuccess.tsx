@@ -179,17 +179,12 @@ const OrderSuccess: React.FC = () => {
                   <span>₹{order.pricing.subtotal?.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Tax (18% GST)</span>
-                  <span>₹{order.pricing.tax?.toLocaleString()}</span>
+                  <span>Tax (GST Inclusive)</span>
+                  <span>₹0</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
-                  <span>
-                    {order.pricing.shippingCost === 0 
-                      ? 'Free' 
-                      : `₹${order.pricing.shippingCost?.toLocaleString()}`
-                    }
-                  </span>
+                  <span>Free</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between text-base font-medium">

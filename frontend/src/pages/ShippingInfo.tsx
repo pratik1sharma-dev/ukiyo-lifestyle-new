@@ -12,8 +12,8 @@ const ShippingInfo: React.FC = () => {
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">Shipping Methods</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-medium text-gray-800 mb-3">Standard Shipping</h3>
-                <p className="text-gray-600 mb-4">Free shipping on orders above ₹999</p>
+                        <h3 className="text-lg font-medium text-gray-800 mb-3">Standard Shipping</h3>
+        <p className="text-gray-600 mb-4">Free shipping on all orders</p>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li>• Delivery within 5-7 business days</li>
                   <li>• Order tracking available</li>
@@ -102,8 +102,8 @@ const ShippingInfo: React.FC = () => {
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">Shipping Policies</h2>
             <div className="space-y-6">
               <div className="border-l-4 border-primary-600 pl-6">
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Free Shipping</h3>
-                <p className="text-gray-600">Orders above ₹999 qualify for free standard shipping across India.</p>
+                        <h3 className="text-lg font-medium text-gray-800 mb-2">Free Shipping</h3>
+        <p className="text-gray-600">All orders qualify for free standard shipping across India.</p>
               </div>
               
               <div className="border-l-4 border-primary-600 pl-6">

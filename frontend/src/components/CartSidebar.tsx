@@ -92,9 +92,9 @@ const CartSidebar: React.FC = () => {
                       <h3 className="text-sm font-medium text-gray-900 truncate">
                         {item.product?.name || 'Unknown Product'}
                       </h3>
-                      <p className="text-sm text-gray-500">
-                        ₹{item.price || 0}
-                      </p>
+                                             <p className="text-sm text-gray-500">
+                         ₹{(item.price || 0).toFixed(2)}
+                       </p>
                       <div className="flex items-center space-x-2 mt-2">
                         <button
                           onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
@@ -128,12 +128,12 @@ const CartSidebar: React.FC = () => {
           {/* Footer */}
           {cart && cart.items && cart.items.filter(item => item && item.product).length > 0 && (
             <div className="border-t border-gray-200 p-4">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-semibold text-gray-900">Total:</span>
-                <span className="text-lg font-semibold text-gray-900">
-                  ₹{cart.total || 0}
-                </span>
-              </div>
+                             <div className="flex justify-between items-center mb-4">
+                 <span className="text-lg font-semibold text-gray-900">Total:</span>
+                 <span className="text-lg font-semibold text-gray-900">
+                   ₹{(cart.total || 0).toFixed(2)}
+                 </span>
+               </div>
               <div className="space-y-2">
                 <Link
                   to="/cart"

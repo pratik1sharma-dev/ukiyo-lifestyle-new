@@ -212,15 +212,13 @@ const Cart: React.FC = () => {
                 </div>
                 
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax</span>
-                  <span className="text-gray-900">₹{(cart.tax || 0).toLocaleString()}</span>
+                  <span className="text-gray-600">Tax (GST Inclusive)</span>
+                  <span className="text-gray-900">₹0</span>
                 </div>
                 
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
-                  <span className="text-gray-900">
-                    {(cart.shipping || 0) === 0 ? 'Free' : `₹${(cart.shipping || 0).toLocaleString()}`}
-                  </span>
+                  <span className="text-gray-900">Free</span>
                 </div>
                 
                 <div className="border-t pt-3">
@@ -253,7 +251,7 @@ const Cart: React.FC = () => {
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-medium text-gray-900 mb-2">Shipping Information</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Free shipping on orders over ₹1,000</li>
+                  <li>• Free shipping on all orders</li>
                   <li>• Delivery within Delhi: 1-2 days</li>
                   <li>• Outside Delhi: 3-5 days</li>
                   <li>• Cash on Delivery available</li>

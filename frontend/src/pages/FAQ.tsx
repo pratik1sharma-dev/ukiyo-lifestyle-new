@@ -62,8 +62,8 @@ const FAQ: React.FC = () => {
       category: "shipping"
     },
     {
-      question: "Do you offer free shipping?",
-      answer: "Yes, we offer free standard shipping on all orders above ₹999. For orders below ₹999, standard shipping costs ₹100.",
+          question: "Do you offer free shipping?",
+    answer: "Yes, we offer free shipping on all orders. No minimum order value required.",
       category: "shipping"
     },
     {

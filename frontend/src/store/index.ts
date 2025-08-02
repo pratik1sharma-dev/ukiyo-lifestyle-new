@@ -80,8 +80,8 @@ interface CartState {
   loading: LoadingState;
   fetchCart: () => Promise<void>;
   addToCart: (productId: string, quantity: number, variant?: string) => Promise<void>;
-  updateCartItem: (productId: string, quantity: number) => Promise<void>;
-  removeFromCart: (productId: string) => Promise<void>;
+  updateCartItem: (itemId: string, quantity: number) => Promise<void>;
+  removeFromCart: (itemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   setCart: (cart: Cart | null) => void;
   isAuthenticated: () => boolean;
@@ -148,7 +148,7 @@ export const useCartStore = create<CartState>()(
               // Update existing item quantity
               currentCart.items[existingItemIndex].quantity += quantity;
               currentCart.items[existingItemIndex].total = 
-                currentCart.items[existingItemIndex].price * currentCart.items[existingItemIndex].quantity;
+                Math.round((currentCart.items[existingItemIndex].price * currentCart.items[existingItemIndex].quantity) * 100) / 100;
             } else {
               // Add new item (we need to fetch product details)
               try {
@@ -174,7 +174,7 @@ export const useCartStore = create<CartState>()(
                   },
                   quantity,
                   price: product.price || 0,
-                  total: (product.price || 0) * quantity,
+                  total: Math.round(((product.price || 0) * quantity) * 100) / 100,
                   variant: variant || null
                 };
                 
@@ -186,10 +186,10 @@ export const useCartStore = create<CartState>()(
             }
             
             // Recalculate cart totals
-            currentCart.subtotal = currentCart.items.reduce((sum, item) => sum + item.total, 0);
-            currentCart.tax = currentCart.subtotal * 0.18; // 18% GST
-            currentCart.shipping = currentCart.subtotal >= 1000 ? 0 : 100; // Free shipping over ₹1000
-            currentCart.total = currentCart.subtotal + currentCart.tax + currentCart.shipping;
+            currentCart.subtotal = Math.round(currentCart.items.reduce((sum, item) => sum + item.total, 0) * 100) / 100;
+            currentCart.tax = 0; // GST is already included in prices
+            currentCart.shipping = 0; // No shipping fees
+            currentCart.total = currentCart.subtotal; // Total equals subtotal since tax and shipping are 0
             currentCart.itemCount = currentCart.items.reduce((sum, item) => sum + item.quantity, 0);
             
             set({ 
@@ -226,13 +226,13 @@ export const useCartStore = create<CartState>()(
             const itemIndex = currentCart.items.findIndex(item => item._id === itemId);
             if (itemIndex >= 0) {
               currentCart.items[itemIndex].quantity = quantity;
-              currentCart.items[itemIndex].total = currentCart.items[itemIndex].price * quantity;
+              currentCart.items[itemIndex].total = Math.round((currentCart.items[itemIndex].price * quantity) * 100) / 100;
               
               // Recalculate cart totals
-              currentCart.subtotal = currentCart.items.reduce((sum, item) => sum + item.total, 0);
-              currentCart.tax = currentCart.subtotal * 0.18;
-              currentCart.shipping = currentCart.subtotal >= 1000 ? 0 : 100;
-              currentCart.total = currentCart.subtotal + currentCart.tax + currentCart.shipping;
+              currentCart.subtotal = Math.round(currentCart.items.reduce((sum, item) => sum + item.total, 0) * 100) / 100;
+              currentCart.tax = 0; // GST is already included in prices
+              currentCart.shipping = 0; // No shipping fees
+              currentCart.total = currentCart.subtotal; // Total equals subtotal since tax and shipping are 0
               currentCart.itemCount = currentCart.items.reduce((sum, item) => sum + item.quantity, 0);
               
               set({ cart: { ...currentCart } });
@@ -260,10 +260,10 @@ export const useCartStore = create<CartState>()(
             currentCart.items = currentCart.items.filter(item => item._id !== itemId);
             
             // Recalculate cart totals
-            currentCart.subtotal = currentCart.items.reduce((sum, item) => sum + item.total, 0);
-            currentCart.tax = currentCart.subtotal * 0.18;
-            currentCart.shipping = currentCart.subtotal >= 1000 ? 0 : 100;
-            currentCart.total = currentCart.subtotal + currentCart.tax + currentCart.shipping;
+            currentCart.subtotal = Math.round(currentCart.items.reduce((sum, item) => sum + item.total, 0) * 100) / 100;
+            currentCart.tax = 0; // GST is already included in prices
+            currentCart.shipping = 0; // No shipping fees
+            currentCart.total = currentCart.subtotal; // Total equals subtotal since tax and shipping are 0
             currentCart.itemCount = currentCart.items.reduce((sum, item) => sum + item.quantity, 0);
             
             set({ cart: currentCart.items.length > 0 ? currentCart : null });

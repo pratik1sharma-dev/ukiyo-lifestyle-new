@@ -584,12 +584,12 @@ const Checkout: React.FC = () => {
                   <span>₹{cart?.subtotal?.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Tax (18% GST)</span>
-                  <span>₹{cart?.tax?.toLocaleString()}</span>
+                  <span>Tax (GST Inclusive)</span>
+                  <span>₹0</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
-                  <span>{cart?.shipping === 0 ? 'Free' : `₹${cart?.shipping?.toLocaleString()}`}</span>
+                  <span>Free</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between text-base font-medium">
