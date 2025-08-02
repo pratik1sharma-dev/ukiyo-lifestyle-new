@@ -86,8 +86,7 @@ const { router: authRoutes } = require('./routes/auth');
 const paymentRoutes = require('./routes/payment');
 const adminRoutes = require('./routes/admin');
 
-// Serve static files for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Static files are now served from Cloudinary
 
 // Use routes
 app.use('/api/auth', authRoutes);

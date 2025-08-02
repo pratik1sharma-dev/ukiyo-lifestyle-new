@@ -41,9 +41,10 @@ export const useProductStore = create<ProductState>((set) => ({
   fetchFeaturedProducts: async () => {
     try {
       const response = await productApi.getFeaturedProducts();
-      set({ featuredProducts: response.data.data });
+      set({ featuredProducts: response.data.data || [] });
     } catch (error: any) {
       console.error('Failed to fetch featured products:', error);
+      set({ featuredProducts: [] });
     }
   },
 

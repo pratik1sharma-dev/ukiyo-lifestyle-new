@@ -62,7 +62,8 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProducts.slice(0, 6).map((product) => (
+              {featuredProducts && featuredProducts.length > 0 ? (
+                featuredProducts.slice(0, 6).map((product) => (
                 <div key={product._id} className="group">
                   <Link to={`/products/${product.slug}`}>
                     <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square">
@@ -90,7 +91,12 @@ const Home: React.FC = () => {
                     </div>
                   </Link>
                 </div>
-              ))}
+              ))
+              ) : (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-gray-500">No featured products available</p>
+                </div>
+              )}
             </div>
           )}
 

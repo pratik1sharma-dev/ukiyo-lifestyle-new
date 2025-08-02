@@ -1,11 +1,9 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const router = express.Router();
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { authenticateToken } = require('./auth');
+const { upload, deleteImage } = require('../config/cloudinary');
 
 // Admin middleware to check if user is admin
 const requireAdmin = (req, res, next) => {
@@ -18,41 +16,7 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, '../uploads/products');
-    
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const fileFilter = (req, file, cb) => {
-  // Accept only image files
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed!'), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
-  },
-  fileFilter: fileFilter
-});
+// Cloudinary upload configuration is imported from config/cloudinary.js
 
 // Check if database is connected
 const isDatabaseConnected = () => {
@@ -443,8 +407,8 @@ router.post('/products', authenticateToken, requireAdmin, upload.array('images',
       });
     }
 
-    // Handle uploaded images
-    const imageUrls = req.files ? req.files.map(file => `/uploads/products/${file.filename}`) : [];
+    // Handle uploaded images - Cloudinary URLs
+    const imageUrls = req.files ? req.files.map(file => file.path) : [];
 
     const slug = generateSlug(name);
 
@@ -552,7 +516,7 @@ router.put('/products/:id', authenticateToken, requireAdmin, upload.array('image
         price: price ? parseFloat(price) : 10000,
         discountPrice: discountPrice ? parseFloat(discountPrice) : null,
         images: req.files && req.files.length > 0 
-          ? req.files.map(file => `/uploads/products/${file.filename}`)
+          ? req.files.map(file => file.path)
           : ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500'],
         category: { _id: category || 'cat1', name: 'Updated Category', slug: 'updated-category' },
         isActive: isActive !== undefined ? (isActive === 'true') : true,
@@ -614,7 +578,7 @@ router.put('/products/:id', authenticateToken, requireAdmin, upload.array('image
     
     // Add new images
     if (req.files && req.files.length > 0) {
-      const newImageUrls = req.files.map(file => `/uploads/products/${file.filename}`);
+      const newImageUrls = req.files.map(file => file.path);
       currentImages = [...currentImages, ...newImageUrls];
     }
     
