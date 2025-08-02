@@ -12,7 +12,20 @@ dotenv.config({ path: '.env.local' });
 const app = express();
 
 // Middleware
-app.use(cors());
+// CORS configuration for production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://your-domain.vercel.app', // Replace with your Vercel domain
+        'https://your-custom-domain.com' // Replace with your custom domain if any
+      ]
+    : ['http://localhost:3000', 'http://localhost:5173'], // Development origins
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -95,12 +108,19 @@ app.use('*', (req, res) => {
   });
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
+  
+  if (mongoose.connection.readyState === 1) {
+    console.log(`✅ MongoDB connected successfully`);
+  } else {
+    console.log(`⚠️  MongoDB not connected - using mock data`);
+  }
 
-app.listen(PORT, () => {
-  console.log(`🚀 Ukiyo Lifestyle API running on port ${PORT}`);
-  console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 API URL: http://localhost:${PORT}`);
   console.log(`📋 Available endpoints:`);
   console.log(`   - POST /api/auth/register`);
   console.log(`   - POST /api/auth/login`);
