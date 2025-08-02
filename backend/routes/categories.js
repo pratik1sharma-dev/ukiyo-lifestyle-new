@@ -10,8 +10,8 @@ const mockCategories = [
     slug: 'home-living',
     description: 'Furniture and home decor items for modern living',
     isActive: true,
-    parent: null,
-    children: [],
+    parentId: null,
+    subcategories: [],
     createdAt: new Date('2024-01-01'),
   },
   {
@@ -20,8 +20,8 @@ const mockCategories = [
     slug: 'fashion-accessories',
     description: 'Stylish clothing and accessories',
     isActive: true,
-    parent: null,
-    children: [],
+    parentId: null,
+    subcategories: [],
     createdAt: new Date('2024-01-02'),
   },
   {
@@ -30,8 +30,8 @@ const mockCategories = [
     slug: 'beauty-wellness',
     description: 'Natural beauty and wellness products',
     isActive: true,
-    parent: null,
-    children: [],
+    parentId: null,
+    subcategories: [],
     createdAt: new Date('2024-01-03'),
   },
   {
@@ -40,8 +40,8 @@ const mockCategories = [
     slug: 'kitchen-dining',
     description: 'Kitchen essentials and dining accessories',
     isActive: true,
-    parent: null,
-    children: [],
+    parentId: null,
+    subcategories: [],
     createdAt: new Date('2024-01-04'),
   },
 ];
@@ -65,8 +65,8 @@ router.get('/', async (req, res) => {
 
     // Original database logic
     const categories = await Category.find({ isActive: true })
-      .populate('parent', 'name slug')
-      .populate('children', 'name slug')
+      .populate('parentId', 'name slug')
+      .populate('subcategories', 'name slug')
       .sort({ createdAt: -1 });
     
     res.json({
@@ -89,7 +89,7 @@ router.get('/root', async (req, res) => {
   try {
     if (!isDatabaseConnected()) {
       // Return mock root categories (categories without parent)
-      const rootCategories = mockCategories.filter(c => !c.parent);
+      const rootCategories = mockCategories.filter(c => !c.parentId);
       return res.json({
         success: true,
         data: rootCategories,
@@ -100,9 +100,9 @@ router.get('/root', async (req, res) => {
     // Original database logic
     const categories = await Category.find({ 
       isActive: true, 
-      parent: null 
+      parentId: null 
     })
-    .populate('children', 'name slug')
+    .populate('subcategories', 'name slug')
     .sort({ createdAt: -1 });
     
     res.json({
@@ -144,8 +144,8 @@ router.get('/:slug', async (req, res) => {
       slug: req.params.slug, 
       isActive: true 
     })
-    .populate('parent', 'name slug')
-    .populate('children', 'name slug');
+    .populate('parentId', 'name slug')
+    .populate('subcategories', 'name slug');
     
     if (!category) {
       return res.status(404).json({
