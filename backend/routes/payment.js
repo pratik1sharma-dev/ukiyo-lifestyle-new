@@ -9,8 +9,8 @@ const { authenticateToken } = require('./auth');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: process.env.RAZORPAY_KEY_ID|| 'rzp_live_YdF3OnygSeV4jV',
+  key_secret: process.env.RAZORPAY_KEY_SECRET|| 'B9ZtyRlhOHBbnZaP06voertO',
 });
 
 // Check if database is connected

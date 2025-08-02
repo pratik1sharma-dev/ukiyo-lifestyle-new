@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Category = require('./models/Category');
 const Product = require('./models/Product');
 require('dotenv').config();
+// Also load .env.local if it exists
+require('dotenv').config({ path: '.env.local' });
 
 // Sample categories
 const categories = [
