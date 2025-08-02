@@ -169,6 +169,8 @@ interface AuthState {
   loading: LoadingState;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: any) => Promise<void>;
+  updateProfile: (userData: { firstName: string; lastName: string; email: string; phone: string }) => Promise<void>;
+  checkAuth: () => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
 }
@@ -228,8 +230,57 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      updateProfile: async (userData: { firstName: string; lastName: string; email: string; phone: string }) => {
+        set({ loading: { isLoading: true, error: null } });
+        try {
+          const response = await authApi.updateProfile(userData);
+          const { user } = response.data.data;
+          
+          set({ 
+            user,
+            loading: { isLoading: false, error: null }
+          });
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || error.message || 'Profile update failed';
+          set({ 
+            loading: { isLoading: false, error: errorMessage }
+          });
+          throw new Error(errorMessage);
+        }
+      },
+
+      checkAuth: async () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          set({ user: null, isAuthenticated: false, loading: { isLoading: false, error: null } });
+          return;
+        }
+
+        set({ loading: { isLoading: true, error: null } });
+        try {
+          const response = await authApi.getProfile();
+          const { user } = response.data.data;
+          
+          set({ 
+            user,
+            isAuthenticated: true,
+            loading: { isLoading: false, error: null }
+          });
+        } catch (error: any) {
+          // Token is invalid, clear it
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          set({ 
+            user: null, 
+            isAuthenticated: false,
+            loading: { isLoading: false, error: null }
+          });
+        }
+      },
+
       logout: () => {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
         set({ user: null, isAuthenticated: false });
       },
 

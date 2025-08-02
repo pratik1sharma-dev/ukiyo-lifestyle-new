@@ -116,6 +116,14 @@ export const authApi = {
     return api.post('/auth/register', userData);
   },
 
+  updateProfile: async (userData: { firstName: string; lastName: string; email: string; phone: string }) => {
+    return api.put('/auth/profile', userData);
+  },
+
+  getProfile: async () => {
+    return api.get('/auth/profile');
+  },
+
   logout: async () => {
     return api.post('/auth/logout');
   },
