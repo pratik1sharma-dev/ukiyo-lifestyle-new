@@ -20,6 +20,11 @@ const storage = new CloudinaryStorage({
       { quality: 'auto' },
       { fetch_format: 'auto' }
     ],
+    public_id: (req, file) => {
+      // Generate unique public ID
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      return `product-${uniqueSuffix}`;
+    },
   },
 });
 
@@ -38,6 +43,27 @@ const upload = multer({
     }
   },
 });
+
+// Helper function to extract public ID from Cloudinary URL
+const extractPublicId = (imageUrl) => {
+  try {
+    // Handle different Cloudinary URL formats
+    if (imageUrl.includes('cloudinary.com')) {
+      const urlParts = imageUrl.split('/');
+      const uploadIndex = urlParts.findIndex(part => part === 'upload');
+      if (uploadIndex !== -1 && uploadIndex + 2 < urlParts.length) {
+        // Extract the path after upload/version/
+        const pathAfterUpload = urlParts.slice(uploadIndex + 2).join('/');
+        // Remove file extension
+        return pathAfterUpload.split('.')[0];
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error extracting public ID:', error);
+    return null;
+  }
+};
 
 // Helper function to delete image from Cloudinary
 const deleteImage = async (publicId) => {
@@ -73,4 +99,5 @@ module.exports = {
   upload,
   deleteImage,
   uploadImage,
+  extractPublicId,
 }; 

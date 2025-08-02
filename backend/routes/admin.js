@@ -3,7 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { authenticateToken } = require('./auth');
-const { upload, deleteImage } = require('../config/cloudinary');
+const { upload, deleteImage, extractPublicId } = require('../config/cloudinary');
 
 // Admin middleware to check if user is admin
 const requireAdmin = (req, res, next) => {
@@ -570,9 +570,26 @@ router.put('/products/:id', authenticateToken, requireAdmin, upload.array('image
     // Handle images
     let currentImages = [...product.images];
     
-    // Remove specified images
+    // Remove specified images from Cloudinary
     if (removeImages) {
       const imagesToRemove = Array.isArray(removeImages) ? removeImages : [removeImages];
+      
+      // Delete images from Cloudinary
+      for (const imageUrl of imagesToRemove) {
+        try {
+          const publicId = extractPublicId(imageUrl);
+          if (publicId) {
+            await deleteImage(publicId);
+            console.log(`✅ Deleted image from Cloudinary: ${publicId}`);
+          } else {
+            console.warn(`⚠️ Could not extract public ID from URL: ${imageUrl}`);
+          }
+        } catch (error) {
+          console.error(`❌ Failed to delete image from Cloudinary: ${imageUrl}`, error);
+        }
+      }
+      
+      // Remove from current images array
       currentImages = currentImages.filter(img => !imagesToRemove.includes(img));
     }
     
@@ -623,13 +640,22 @@ router.delete('/products/:id', authenticateToken, requireAdmin, async (req, res)
       });
     }
 
-    // TODO: Delete associated image files from filesystem
-    // product.images.forEach(imageUrl => {
-    //   const imagePath = path.join(__dirname, '..', imageUrl);
-    //   if (fs.existsSync(imagePath)) {
-    //     fs.unlinkSync(imagePath);
-    //   }
-    // });
+    // Delete associated images from Cloudinary
+    if (product.images && product.images.length > 0) {
+      for (const imageUrl of product.images) {
+        try {
+          const publicId = extractPublicId(imageUrl);
+          if (publicId) {
+            await deleteImage(publicId);
+            console.log(`✅ Deleted image from Cloudinary: ${publicId}`);
+          } else {
+            console.warn(`⚠️ Could not extract public ID from URL: ${imageUrl}`);
+          }
+        } catch (error) {
+          console.error(`❌ Failed to delete image from Cloudinary: ${imageUrl}`, error);
+        }
+      }
+    }
 
     res.json({
       success: true,
