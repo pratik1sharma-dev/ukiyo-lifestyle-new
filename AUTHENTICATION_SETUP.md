@@ -109,11 +109,11 @@ TWILIO_WHATSAPP_NUMBER=+14155238886
 #### **Configure URLs:**
 ```bash
 # Authorized JavaScript origins
-http://localhost:3000
+http://localhost:5173
 https://your-domain.com
 
 # Authorized redirect URIs
-http://localhost:3000/login
+http://localhost:5173/login
 https://your-domain.com/login
 ```
 
