@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Category = require('./models/Category');
 const Product = require('./models/Product');
+const User = require('./models/User');
 require('dotenv').config();
 // Also load .env.local if it exists
 require('dotenv').config({ path: '.env.local' });
@@ -133,6 +134,30 @@ const products = [
   }
 ];
 
+// Sample users
+const users = [
+  {
+    firstName: 'Demo',
+    lastName: 'User',
+    email: 'demo@ukiyo.com',
+    password: 'password123',
+    phone: '+919876543210',
+    role: 'customer',
+    emailVerified: true,
+    isActive: true
+  },
+  {
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@ukiyo.com',
+    password: 'password123',
+    phone: '+919876543210',
+    role: 'admin',
+    emailVerified: true,
+    isActive: true
+  }
+];
+
 async function seedDatabase() {
   try {
     // Connect to MongoDB
@@ -145,6 +170,7 @@ async function seedDatabase() {
     // Clear existing data
     await Category.deleteMany({});
     await Product.deleteMany({});
+    await User.deleteMany({});
     console.log('🗑️  Cleared existing data');
 
     // Insert categories
@@ -180,10 +206,20 @@ async function seedDatabase() {
     const createdProducts = await Product.insertMany(productsWithCategories);
     console.log(`✅ Created ${createdProducts.length} products`);
 
+    // Insert users (create individually to trigger password hashing middleware)
+    const createdUsers = [];
+    for (const userData of users) {
+      const user = new User(userData);
+      await user.save();
+      createdUsers.push(user);
+    }
+    console.log(`✅ Created ${createdUsers.length} users`);
+
     console.log('🎉 Database seeded successfully!');
     console.log('\n📋 Sample data created:');
     console.log(`   - Categories: ${createdCategories.length}`);
     console.log(`   - Products: ${createdProducts.length}`);
+    console.log(`   - Users: ${createdUsers.length} (admin@ukiyo.com, demo@ukiyo.com)`);
     console.log('\n🔗 You can now test the API endpoints:');
     console.log('   - GET http://localhost:5000/api/categories');
     console.log('   - GET http://localhost:5000/api/products');

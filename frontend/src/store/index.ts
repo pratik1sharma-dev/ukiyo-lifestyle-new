@@ -28,7 +28,7 @@ export const useProductStore = create<ProductState>((set) => ({
     try {
       const response = await productApi.getProducts(filters);
       set({ 
-        products: response.data.products,
+        products: response.data.data.products,
         loading: { isLoading: false, error: null }
       });
     } catch (error: any) {
@@ -41,7 +41,7 @@ export const useProductStore = create<ProductState>((set) => ({
   fetchFeaturedProducts: async () => {
     try {
       const response = await productApi.getFeaturedProducts();
-      set({ featuredProducts: response.data });
+      set({ featuredProducts: response.data.data });
     } catch (error: any) {
       console.error('Failed to fetch featured products:', error);
     }
@@ -50,7 +50,7 @@ export const useProductStore = create<ProductState>((set) => ({
   fetchCategories: async () => {
     try {
       const response = await categoryApi.getCategories();
-      set({ categories: response.data });
+      set({ categories: response.data.data });
     } catch (error: any) {
       console.error('Failed to fetch categories:', error);
     }
@@ -61,7 +61,7 @@ export const useProductStore = create<ProductState>((set) => ({
     try {
       const response = await productApi.getProductBySlug(slug);
       set({ 
-        currentProduct: response.data,
+        currentProduct: response.data.data,
         loading: { isLoading: false, error: null }
       });
     } catch (error: any) {
@@ -100,7 +100,7 @@ export const useCartStore = create<CartState>()(
         try {
           const response = await cartApi.getCart();
           set({ 
-            cart: response.data,
+            cart: response.data.data,
             loading: { isLoading: false, error: null }
           });
         } catch (error: any) {
@@ -115,7 +115,7 @@ export const useCartStore = create<CartState>()(
         try {
           const response = await cartApi.addToCart(productId, quantity);
           set({ 
-            cart: response.data,
+            cart: response.data.data,
             loading: { isLoading: false, error: null }
           });
         } catch (error: any) {
@@ -128,7 +128,7 @@ export const useCartStore = create<CartState>()(
       updateCartItem: async (productId: string, quantity: number) => {
         try {
           const response = await cartApi.updateCartItem(productId, quantity);
-          set({ cart: response.data });
+          set({ cart: response.data.data });
         } catch (error: any) {
           console.error('Failed to update cart item:', error);
         }
@@ -137,7 +137,7 @@ export const useCartStore = create<CartState>()(
       removeFromCart: async (productId: string) => {
         try {
           const response = await cartApi.removeFromCart(productId);
-          set({ cart: response.data });
+          set({ cart: response.data.data });
         } catch (error: any) {
           console.error('Failed to remove from cart:', error);
         }
@@ -206,7 +206,7 @@ export const useAuthStore = create<AuthState>()(
           // Fetch user's cart after successful login
           try {
             const cartResponse = await cartApi.getCart();
-            useCartStore.getState().setCart(cartResponse.data);
+            useCartStore.getState().setCart(cartResponse.data.data);
           } catch (cartError) {
             // Cart fetch failed, but login was successful - continue
             console.warn('Failed to fetch user cart after login:', cartError);
@@ -284,7 +284,7 @@ export const useAuthStore = create<AuthState>()(
           // Fetch user's cart after auth restoration
           try {
             const cartResponse = await cartApi.getCart();
-            useCartStore.getState().setCart(cartResponse.data);
+            useCartStore.getState().setCart(cartResponse.data.data);
           } catch (cartError) {
             // Cart fetch failed, but auth was successful - continue
             console.warn('Failed to fetch user cart after auth restoration:', cartError);
