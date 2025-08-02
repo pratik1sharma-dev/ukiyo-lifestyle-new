@@ -166,4 +166,61 @@ export const paymentApi = {
   },
 };
 
+// Admin API
+export const adminApi = {
+  // Dashboard stats
+  getDashboardStats: async () => {
+    return api.get('/admin/dashboard/stats');
+  },
+
+  // Categories
+  getCategories: async () => {
+    return api.get('/admin/categories');
+  },
+
+  createCategory: async (categoryData: { name: string; description?: string; isActive?: boolean }) => {
+    return api.post('/admin/categories', categoryData);
+  },
+
+  updateCategory: async (id: string, categoryData: { name?: string; description?: string; isActive?: boolean }) => {
+    return api.put(`/admin/categories/${id}`, categoryData);
+  },
+
+  deleteCategory: async (id: string) => {
+    return api.delete(`/admin/categories/${id}`);
+  },
+
+  // Products
+  getProducts: async (params?: { page?: number; limit?: number; category?: string; search?: string; status?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.category) searchParams.append('category', params.category);
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.status) searchParams.append('status', params.status);
+
+    return api.get(`/admin/products?${searchParams.toString()}`);
+  },
+
+  createProduct: async (formData: FormData) => {
+    return api.post('/admin/products', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  updateProduct: async (id: string, formData: FormData) => {
+    return api.put(`/admin/products/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  deleteProduct: async (id: string) => {
+    return api.delete(`/admin/products/${id}`);
+  },
+};
+
 export default api;

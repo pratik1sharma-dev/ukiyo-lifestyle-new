@@ -19,6 +19,21 @@ let mockUsers = [
     createdAt: new Date(),
     updatedAt: new Date(),
     addresses: []
+  },
+  {
+    _id: 'admin1',
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@ukiyo.com',
+    password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3L3jzjvG4G', // hashed "password123"
+    phone: '+91-9876543210',
+    role: 'admin',
+    isActive: true,
+    emailVerified: true,
+    lastLogin: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    addresses: []
   }
 ];
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 const dotenv = require('dotenv');
 
 // Load environment variables
@@ -63,6 +64,10 @@ const categoryRoutes = require('./routes/categories');
 const cartRoutes = require('./routes/cart');
 const { router: authRoutes } = require('./routes/auth');
 const paymentRoutes = require('./routes/payment');
+const adminRoutes = require('./routes/admin');
+
+// Serve static files for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Use routes
 app.use('/api/auth', authRoutes);
@@ -70,6 +75,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -108,4 +114,8 @@ app.listen(PORT, () => {
   console.log(`   - POST /api/payment/create-order`);
   console.log(`   - POST /api/payment/verify`);
   console.log(`   - GET  /api/payment/orders`);
+  console.log(`   - 🔐 Admin endpoints:`);
+  console.log(`     - GET/POST/PUT/DELETE /api/admin/products`);
+  console.log(`     - GET/POST/PUT/DELETE /api/admin/categories`);
+  console.log(`     - GET /api/admin/dashboard/stats`);
 }); 

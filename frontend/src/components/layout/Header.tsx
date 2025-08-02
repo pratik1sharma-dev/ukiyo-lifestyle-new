@@ -89,27 +89,39 @@ const Header: React.FC = () => {
                   <span className="ml-1 text-sm hidden md:block">{user?.firstName}</span>
                 </button>
                 
-                {/* Dropdown Menu */}
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    My Profile
-                  </Link>
-                  <Link
-                    to="/orders"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    My Orders
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Sign Out
-                  </button>
-                </div>
+                                 {/* Dropdown Menu */}
+                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                   <Link
+                     to="/profile"
+                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                   >
+                     My Profile
+                   </Link>
+                   <Link
+                     to="/orders"
+                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                   >
+                     My Orders
+                   </Link>
+                   {user?.role === 'admin' && (
+                     <>
+                       <div className="border-t border-gray-100 my-1"></div>
+                       <Link
+                         to="/admin"
+                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium"
+                       >
+                         🔐 Admin Dashboard
+                       </Link>
+                     </>
+                   )}
+                   <div className="border-t border-gray-100 my-1"></div>
+                   <button
+                     onClick={logout}
+                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                   >
+                     Sign Out
+                   </button>
+                 </div>
               </div>
             ) : (
               <Link
