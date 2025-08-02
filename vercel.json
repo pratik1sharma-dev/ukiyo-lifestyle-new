@@ -35,10 +35,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "frontend/dist/**/*.js": {
-      "maxDuration": 10
-    }
-  }
+  ]
 }
