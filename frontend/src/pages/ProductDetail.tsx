@@ -157,11 +157,11 @@ const ProductDetail: React.FC = () => {
             {/* Stock Status */}
             <div className="flex items-center space-x-2">
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                product.inventory.inStock 
+                product.inStock 
                   ? 'bg-green-100 text-green-800' 
                   : 'bg-red-100 text-red-800'
               }`}>
-                {product.inventory.inStock ? (
+                {product.inStock ? (
                   <>
                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -241,9 +241,9 @@ const ProductDetail: React.FC = () => {
               <div className="flex space-x-4">
                 <button
                   onClick={handleAddToCart}
-                  disabled={!product.inventory.inStock}
+                  disabled={!product.inStock}
                   className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
-                    product.inventory.inStock
+                    product.inStock
                       ? 'bg-primary-600 hover:bg-primary-700 text-white'
                       : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   }`}

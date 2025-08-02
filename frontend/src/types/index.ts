@@ -12,9 +12,9 @@ export interface Product {
   variants?: ProductVariant[];
   inventory: {
     quantity: number;
-    inStock: boolean;
     lowStockThreshold?: number;
   };
+  inStock?: boolean;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;

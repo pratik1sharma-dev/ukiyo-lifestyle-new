@@ -252,25 +252,25 @@ const Products: React.FC = () => {
                         
                         {/* Stock Status */}
                         <span className={`text-xs px-2 py-1 rounded-full ${
-                          product.inventory.inStock 
+                          product.inStock 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {product.inventory.inStock ? 'In Stock' : 'Out of Stock'}
+                          {product.inStock ? 'In Stock' : 'Out of Stock'}
                         </span>
                       </div>
 
                       {/* Add to Cart Button */}
                       <button
                         onClick={() => handleAddToCart(product._id)}
-                        disabled={!product.inventory.inStock}
+                        disabled={!product.inStock}
                         className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                          product.inventory.inStock
+                          product.inStock
                             ? 'bg-primary-600 hover:bg-primary-700 text-white'
                             : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                         }`}
                       >
-                        {product.inventory.inStock ? 'Add to Cart' : 'Out of Stock'}
+                        {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                       </button>
                     </div>
                   </div>
