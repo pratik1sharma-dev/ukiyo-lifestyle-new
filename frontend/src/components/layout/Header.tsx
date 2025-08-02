@@ -24,7 +24,6 @@ const Header: React.FC = () => {
               <h1 className="text-2xl font-cormorant font-bold text-gray-900">
                 Ukiyo Lifestyle
               </h1>
-              <span className="ml-2 text-sm text-gray-500">Delhi</span>
             </Link>
           </div>
 
