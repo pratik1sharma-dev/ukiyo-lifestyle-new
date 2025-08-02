@@ -62,22 +62,19 @@ cartSchema.virtual('itemCount').get(function() {
   return this.items.reduce((count, item) => count + item.quantity, 0);
 });
 
-// Virtual for cart total (with tax and shipping)
+// Virtual for cart total (GST inclusive, free shipping)
 cartSchema.virtual('total').get(function() {
-  const subtotal = this.subtotal;
-  const tax = subtotal * 0.18; // 18% GST
-  const shipping = subtotal > 1000 ? 0 : 100; // Free shipping above ₹1000
-  return subtotal + tax + shipping;
+  return this.subtotal; // Total equals subtotal since GST is included and shipping is free
 });
 
-// Virtual for tax amount
+// Virtual for tax amount (GST is already included in prices)
 cartSchema.virtual('tax').get(function() {
-  return this.subtotal * 0.18; // 18% GST
+  return 0; // GST is already included in product prices
 });
 
-// Virtual for shipping amount
+// Virtual for shipping amount (free shipping on all orders)
 cartSchema.virtual('shipping').get(function() {
-  return this.subtotal > 1000 ? 0 : 100; // Free shipping above ₹1000
+  return 0; // Free shipping on all orders
 });
 
 // Index for better performance

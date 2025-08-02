@@ -85,14 +85,15 @@ router.post('/add', authenticateToken, async (req, res) => {
 });
 
 // PUT /api/cart/update - Update cart item quantity (Protected Route)
-router.put('/update', authenticateToken, async (req, res) => {
+router.put('/update/:itemId', authenticateToken, async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
+    const { quantity } = req.body;
+    const { itemId } = req.params;
     
-    if (!productId || quantity === undefined) {
+    if (quantity === undefined) {
       return res.status(400).json({
         success: false,
-        message: 'Product ID and quantity are required'
+        message: 'Quantity is required'
       });
     }
 
@@ -108,7 +109,23 @@ router.put('/update', authenticateToken, async (req, res) => {
       });
     }
     
-    await cart.updateItemQuantity(productId, quantity, null);
+    // Find the item by its ID and update quantity
+    const item = cart.items.id(itemId);
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: 'Item not found in cart'
+      });
+    }
+    
+    if (quantity <= 0) {
+      cart.items.pull(itemId);
+    } else {
+      item.quantity = quantity;
+    }
+    
+    await cart.save();
+    await cart.populate('items.product', 'name price images slug');
     
     res.json({
       success: true,
@@ -125,23 +142,22 @@ router.put('/update', authenticateToken, async (req, res) => {
   }
 });
 
-// DELETE /api/cart/remove - Remove item from cart
-router.delete('/remove', authenticateToken, async (req, res) => {
+// DELETE /api/cart/remove/:itemId - Remove item from cart
+router.delete('/remove/:itemId', authenticateToken, async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { itemId } = req.params;
     
-    if (!productId) {
+    if (!itemId) {
       return res.status(400).json({
         success: false,
-        message: 'Product ID is required'
+        message: 'Item ID is required'
       });
     }
 
+    const userId = req.user._id;
 
-
-    // Original database logic
-    const sessionId = req.session?.id || 'anonymous';
-    const cart = await Cart.findOne({ sessionId });
+    // Database logic for authenticated user
+    const cart = await Cart.findByUser(userId);
     
     if (!cart) {
       return res.status(404).json({
@@ -150,8 +166,9 @@ router.delete('/remove', authenticateToken, async (req, res) => {
       });
     }
     
-    await cart.removeItem(productId);
-    await cart.populate('items.product');
+    cart.items.pull(itemId);
+    await cart.save();
+    await cart.populate('items.product', 'name price images slug');
     
     res.json({
       success: true,
@@ -173,11 +190,8 @@ router.delete('/clear', authenticateToken, async (req, res) => {
   try {
     const userId = req.user._id;
 
-
-
-    // Original database logic
-    const sessionId = req.session?.id || 'anonymous';
-    const cart = await Cart.findOne({ sessionId });
+    // Database logic for authenticated user
+    const cart = await Cart.findByUser(userId);
     
     if (!cart) {
       return res.status(404).json({
@@ -186,7 +200,8 @@ router.delete('/clear', authenticateToken, async (req, res) => {
       });
     }
     
-    await cart.clear();
+    cart.items = [];
+    await cart.save();
     
     res.json({
       success: true,

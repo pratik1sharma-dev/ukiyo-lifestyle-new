@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCartStore, useUIStore, useProductStore, useAuthStore } from '../../store';
+import logoImage from '../../assets/logo.jpg';
 
 const Header: React.FC = () => {
   const { cart, toggleCart } = useCartStore();
@@ -22,7 +23,7 @@ const Header: React.FC = () => {
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <img 
-                src="/images/logo.jpg" 
+                src={logoImage} 
                 alt="Ukiyo Lifestyle" 
                 className="h-8 w-auto"
               />

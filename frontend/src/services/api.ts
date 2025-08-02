@@ -99,13 +99,13 @@ export const cartApi = {
   },
 
   // Update cart item
-  updateCartItem: async (productId: string, quantity: number): Promise<ApiResponse<Cart>> => {
-    return api.put('/cart/update', { productId, quantity });
+  updateCartItem: async (itemId: string, quantity: number): Promise<ApiResponse<Cart>> => {
+    return api.put(`/cart/update/${itemId}`, { quantity });
   },
 
   // Remove item from cart
-  removeFromCart: async (productId: string): Promise<ApiResponse<Cart>> => {
-    return api.delete('/cart/remove', { data: { productId } });
+  removeFromCart: async (itemId: string): Promise<ApiResponse<Cart>> => {
+    return api.delete(`/cart/remove/${itemId}`);
   },
 
   // Clear cart
