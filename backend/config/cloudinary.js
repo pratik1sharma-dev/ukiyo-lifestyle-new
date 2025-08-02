@@ -51,6 +51,11 @@ const upload = multer({
   },
 });
 
+// Create specific upload middleware for different field names
+const uploadImages = upload.array('images', 5); // For 'images' field
+const uploadSingleImage = upload.single('image'); // For 'image' field
+const uploadAnyImages = upload.any(); // For any field name
+
 // Helper function to extract public ID from Cloudinary URL
 const extractPublicId = (imageUrl) => {
   try {
@@ -104,6 +109,9 @@ const uploadImage = async (file) => {
 module.exports = {
   cloudinary,
   upload,
+  uploadImages,
+  uploadSingleImage,
+  uploadAnyImages,
   deleteImage,
   uploadImage,
   extractPublicId,

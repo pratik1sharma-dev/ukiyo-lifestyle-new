@@ -3,7 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { authenticateToken } = require('./auth');
-const { upload, deleteImage, extractPublicId } = require('../config/cloudinary');
+const { uploadAnyImages, deleteImage, extractPublicId } = require('../config/cloudinary');
 
 // Admin middleware to check if user is admin
 const requireAdmin = (req, res, next) => {
@@ -397,8 +397,14 @@ router.get('/products/:id', authenticateToken, requireAdmin, async (req, res) =>
 });
 
 // POST /api/admin/products - Create new product
-router.post('/products', authenticateToken, requireAdmin, upload.array('images', 5), async (req, res) => {
+router.post('/products', authenticateToken, requireAdmin, uploadAnyImages, async (req, res) => {
   try {
+    console.log('🔧 Product Creation Request:', {
+      body: req.body,
+      files: req.files ? req.files.map(f => ({ fieldname: f.fieldname, originalname: f.originalname })) : 'No files',
+      timestamp: new Date().toISOString()
+    });
+
     const {
       name,
       description,
@@ -504,7 +510,7 @@ router.post('/products', authenticateToken, requireAdmin, upload.array('images',
 });
 
 // PUT /api/admin/products/:id - Update product
-router.put('/products/:id', authenticateToken, requireAdmin, upload.array('images', 5), async (req, res) => {
+router.put('/products/:id', authenticateToken, requireAdmin, uploadAnyImages, async (req, res) => {
   try {
     const { id } = req.params;
     const {
