@@ -92,7 +92,7 @@ const Cart: React.FC = () => {
               Shopping Cart
             </h1>
             <p className="text-gray-600">
-              {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'} in your cart
+              {cart.itemCount || 0} {(cart.itemCount || 0) === 1 ? 'item' : 'items'} in your cart
             </p>
           </div>
           
@@ -108,7 +108,7 @@ const Cart: React.FC = () => {
           
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cart.items.map((item) => (
+            {cart.items && cart.items.length > 0 ? cart.items.map((item) => (
               <div key={item._id} className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex flex-col sm:flex-row gap-4">
                   
@@ -116,7 +116,7 @@ const Cart: React.FC = () => {
                   <Link to={`/products/${item.product.slug}`} className="flex-shrink-0">
                     <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
                       <img
-                        src={item.product.images[0] || '/placeholder-product.jpg'}
+                        src={item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/placeholder-product.jpg'}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                       />
@@ -193,7 +193,11 @@ const Cart: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No items in cart</p>
+              </div>
+            )}
           </div>
 
           {/* Order Summary */}
@@ -204,18 +208,18 @@ const Cart: React.FC = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
-                  <span className="text-gray-900">₹{cart.subtotal.toLocaleString()}</span>
+                  <span className="text-gray-900">₹{(cart.subtotal || 0).toLocaleString()}</span>
                 </div>
                 
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax</span>
-                  <span className="text-gray-900">₹{cart.tax.toLocaleString()}</span>
+                  <span className="text-gray-900">₹{(cart.tax || 0).toLocaleString()}</span>
                 </div>
                 
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-gray-900">
-                    {cart.shipping === 0 ? 'Free' : `₹${cart.shipping.toLocaleString()}`}
+                    {(cart.shipping || 0) === 0 ? 'Free' : `₹${(cart.shipping || 0).toLocaleString()}`}
                   </span>
                 </div>
                 
@@ -223,7 +227,7 @@ const Cart: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Total</span>
                     <span className="font-bold text-xl text-gray-900">
-                      ₹{cart.total.toLocaleString()}
+                      ₹{(cart.total || 0).toLocaleString()}
                     </span>
                   </div>
                 </div>
