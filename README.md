@@ -112,19 +112,48 @@ npm install
 #### Backend (Terminal 1)
 ```bash
 cd backend
+npm install
 npm run dev
+```
+
+**Expected Output:**
+```
+🚀 Ukiyo Lifestyle API running on port 5000
+📱 Environment: development
+🔗 API URL: http://localhost:5000
+⚠️  MongoDB connection failed: connect ECONNREFUSED ::1:27017
+🔄 Server will continue without database (API endpoints will return mock data)
 ```
 
 #### Frontend (Terminal 2)
 ```bash
 cd frontend
+npm install
 npm run dev
+```
+
+**Expected Output:**
+```
+VITE v4.5.14  ready in 335 ms
+➜  Local:   http://localhost:5173/
 ```
 
 ### 5. Access the Application
 - **Frontend:** http://localhost:5173
 - **Backend API:** http://localhost:5000
-- **Admin Panel:** http://localhost:5173/admin
+- **API Health Check:** http://localhost:5000/health
+
+### 6. Test API Endpoints
+```bash
+# Get all products
+curl http://localhost:5000/api/products
+
+# Get featured products
+curl http://localhost:5000/api/products/featured
+
+# Get categories
+curl http://localhost:5000/api/categories
+```
 
 ## 🐳 Docker Setup
 
@@ -231,8 +260,36 @@ npm run build
 - **MongoDB Atlas:** Cloud database service
 - **AWS DocumentDB:** Managed MongoDB service
 
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Backend Issues:**
+- **Port 5000 in use:** Change PORT in backend/.env
+- **MongoDB error:** Expected - server runs with mock data
+- **Dependencies error:** Run `npm install` in backend directory
+
+**Frontend Issues:**
+- **Port 5173 in use:** Vite will automatically use next available port
+- **Node.js version:** Ensure you're using Node.js v18+
+- **Dependencies error:** Run `npm install` in frontend directory
+
+**Quick Commands:**
+```bash
+# Check Node.js version
+node --version
+
+# Check if ports are in use (Windows)
+netstat -ano | findstr :5000
+netstat -ano | findstr :5173
+
+# Kill process on specific port (Windows)
+taskkill /PID <PID> /F
+```
+
 ## 📚 Documentation
 
+- [Quick Start Guide](./QUICK_START.md) - Get up and running in 5 minutes
 - [Requirements Document](./REQUIREMENTS.md) - Detailed project requirements
 - [Architecture Document](./ARCHITECTURE.md) - System architecture and technology choices
 - [Project Structure](./PROJECT_STRUCTURE.md) - Detailed folder organization
