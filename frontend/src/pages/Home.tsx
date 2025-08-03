@@ -31,7 +31,7 @@ const Home: React.FC = () => {
               </Link>
               <Link
                 to="/about"
-                className="inline-block px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
+                className="btn-outline"
               >
                 Learn More
               </Link>
@@ -54,7 +54,7 @@ const Home: React.FC = () => {
 
           {loading.isLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+              <div className="loading-spinner h-12 w-12"></div>
             </div>
           ) : loading.error ? (
             <div className="text-center text-red-600 py-8">
@@ -64,7 +64,7 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredProducts && featuredProducts.length > 0 ? (
                 featuredProducts.slice(0, 6).map((product) => (
-                <div key={product._id} className="group">
+                <div key={product._id} className="card card-hover group">
                   <Link to={`/products/${product.slug}`}>
                     <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square">
                       <img

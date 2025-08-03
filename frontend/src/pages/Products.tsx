@@ -74,7 +74,7 @@ const Products: React.FC = () => {
           {/* Mobile Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden mt-4 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="btn-outline btn-sm md:hidden mt-4"
           >
             Filters & Sort
           </button>
@@ -94,7 +94,7 @@ const Products: React.FC = () => {
                   value={filters.search || ''}
                   onChange={(e) => handleFilterChange({ search: e.target.value })}
                   placeholder="Search products..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="input-primary"
                 />
               </div>
 
@@ -104,7 +104,7 @@ const Products: React.FC = () => {
                 <select
                   value={filters.category || ''}
                   onChange={(e) => handleFilterChange({ category: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="select-primary"
                 >
                   <option value="">All Categories</option>
                   {categories?.map((category) => (
@@ -124,14 +124,14 @@ const Products: React.FC = () => {
                     value={filters.minPrice || ''}
                     onChange={(e) => handleFilterChange({ minPrice: e.target.value ? Number(e.target.value) : undefined })}
                     placeholder="Min"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="input-primary"
                   />
                   <input
                     type="number"
                     value={filters.maxPrice || ''}
                     onChange={(e) => handleFilterChange({ maxPrice: e.target.value ? Number(e.target.value) : undefined })}
                     placeholder="Max"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="input-primary"
                   />
                 </div>
               </div>
@@ -152,7 +152,7 @@ const Products: React.FC = () => {
               {/* Clear Filters */}
               <button
                 onClick={clearFilters}
-                className="w-full px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="btn-ghost btn-sm w-full"
               >
                 Clear All Filters
               </button>
@@ -173,7 +173,7 @@ const Products: React.FC = () => {
                 <select
                   value={filters.sort}
                   onChange={(e) => handleFilterChange({ sort: e.target.value as any })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="select-primary"
                 >
                   <option value="newest">Newest</option>
                   <option value="price_asc">Price: Low to High</option>
@@ -187,14 +187,14 @@ const Products: React.FC = () => {
             {/* Loading State */}
             {loading.isLoading ? (
               <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                <div className="loading-spinner h-12 w-12"></div>
               </div>
             ) : loading.error ? (
               <div className="text-center text-red-600 py-8">
                 <p>Error loading products: {loading.error}</p>
                 <button
                   onClick={() => fetchProducts(filters)}
-                  className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  className="btn-primary mt-4"
                 >
                   Try Again
                 </button>
@@ -204,7 +204,7 @@ const Products: React.FC = () => {
                 <p className="text-gray-500 text-lg mb-4">No products found</p>
                 <button
                   onClick={clearFilters}
-                  className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  className="btn-primary"
                 >
                   Clear Filters
                 </button>
@@ -214,7 +214,7 @@ const Products: React.FC = () => {
               /* Products Grid */
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products?.map((product) => (
-                  <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow">
+                  <div key={product._id} className="card card-hover overflow-hidden group">
                     
                     {/* Product Image */}
                     <Link to={`/products/${product.slug}`}>
@@ -266,10 +266,10 @@ const Products: React.FC = () => {
                       <button
                         onClick={() => handleAddToCart(product._id)}
                         disabled={!product.inStock}
-                        className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
+                        className={`w-full ${
                           product.inStock
-                            ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            ? 'btn-primary'
+                            : 'btn-ghost opacity-50 cursor-not-allowed'
                         }`}
                       >
                         {product.inStock ? 'Add to Cart' : 'Out of Stock'}
@@ -284,16 +284,16 @@ const Products: React.FC = () => {
             {(products?.length || 0) > 0 && (
               <div className="mt-12 flex justify-center">
                 <div className="flex space-x-2">
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed">
+                  <button className="btn-outline btn-sm opacity-50 cursor-not-allowed">
                     Previous
                   </button>
-                  <button className="px-3 py-2 bg-primary-600 text-white rounded-lg">
+                  <button className="btn-primary btn-sm">
                     1
                   </button>
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                  <button className="btn-outline btn-sm">
                     2
                   </button>
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                  <button className="btn-outline btn-sm">
                     Next
                   </button>
                 </div>

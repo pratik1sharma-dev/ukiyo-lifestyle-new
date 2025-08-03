@@ -224,14 +224,14 @@ const ProductDetail: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                    className="w-10 h-10 rounded-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-primary-500 transition-colors"
                   >
                     -
                   </button>
                   <span className="w-12 text-center font-medium">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                    className="w-10 h-10 rounded-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-primary-500 transition-colors"
                   >
                     +
                   </button>
@@ -242,10 +242,10 @@ const ProductDetail: React.FC = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={!product.inStock}
-                  className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+                  className={`flex-1 ${
                     product.inStock
-                      ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      ? 'btn-primary'
+                      : 'btn-ghost opacity-50 cursor-not-allowed'
                   }`}
                 >
                   {isInCart ? 'Add More to Cart' : 'Add to Cart'}
@@ -253,7 +253,7 @@ const ProductDetail: React.FC = () => {
                 
                 <button
                   onClick={() => navigate('/cart')}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                  className="btn-outline"
                 >
                   View Cart
                 </button>
