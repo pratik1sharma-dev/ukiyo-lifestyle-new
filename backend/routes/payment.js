@@ -6,6 +6,7 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const { authenticateToken } = require('./auth');
+const emailService = require('../services/emailService');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -302,6 +303,14 @@ router.post('/create-order', authenticateToken, async (req, res) => {
           order.paymentDetails.razorpayOrderId = `mock_razorpay_${Date.now()}`;
           mockOrders.set(order._id, order);
 
+          // Send admin notification for new order (mock)
+          try {
+            await emailService.sendAdminOrderNotification(order);
+          } catch (emailError) {
+            console.error('Failed to send admin notification:', emailError.message);
+            // Continue with order processing even if email fails
+          }
+
           return res.json({
             success: true,
             message: 'Order created successfully (using mock payment)',
@@ -318,6 +327,15 @@ router.post('/create-order', authenticateToken, async (req, res) => {
         }
       } else {
         // COD or other payment methods
+        
+        // Send admin notification for new order (COD)
+        try {
+          await emailService.sendAdminOrderNotification(order);
+        } catch (emailError) {
+          console.error('Failed to send admin notification:', emailError.message);
+          // Continue with order processing even if email fails
+        }
+        
         return res.json({
           success: true,
           message: 'Order created successfully (using mock data)',
@@ -393,6 +411,14 @@ router.post('/create-order', authenticateToken, async (req, res) => {
 
     await order.save();
 
+    // Send admin notification for new order
+    try {
+      await emailService.sendAdminOrderNotification(order);
+    } catch (emailError) {
+      console.error('Failed to send admin notification:', emailError.message);
+      // Continue with order processing even if email fails
+    }
+
     if (paymentMethod === 'razorpay') {
       try {
         // Create Razorpay order
@@ -443,6 +469,14 @@ router.post('/create-order', authenticateToken, async (req, res) => {
         });
       }
     } else {
+      // Send admin notification for new order (COD - database)
+      try {
+        await emailService.sendAdminOrderNotification(order);
+      } catch (emailError) {
+        console.error('Failed to send admin notification:', emailError.message);
+        // Continue with order processing even if email fails
+      }
+      
       res.json({
         success: true,
         message: 'Order created successfully',

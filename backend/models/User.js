@@ -24,7 +24,10 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: function() {
+      // Password is required only if user doesn't have Google ID (OAuth user) and doesn't have phone verification
+      return !this.googleId && !this.isPhoneVerified;
+    },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false
   },
@@ -137,7 +140,8 @@ userSchema.index({ role: 1, isActive: 1 });
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  // Skip password hashing if no password (Google OAuth users)
+  if (!this.password || !this.isModified('password')) return next();
   
   try {
     const salt = await bcrypt.genSalt(12);
@@ -150,6 +154,10 @@ userSchema.pre('save', async function(next) {
 
 // Instance method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  // For Google OAuth users without password, return false
+  if (!this.password) {
+    return false;
+  }
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

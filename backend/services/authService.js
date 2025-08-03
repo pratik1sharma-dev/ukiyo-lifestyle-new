@@ -215,6 +215,11 @@ class AuthService {
   // Google OAuth verification
   async verifyGoogleToken(idToken) {
     try {
+      // Check if Google Client ID is configured
+      if (!process.env.GOOGLE_CLIENT_ID) {
+        throw new Error('Google OAuth is not configured. Please set GOOGLE_CLIENT_ID environment variable.');
+      }
+
       // Verify the Google ID token
       const ticket = await googleClient.verifyIdToken({
         idToken,
@@ -245,19 +250,24 @@ class AuthService {
 
       if (!user) {
         // Create new user with Google data
-        user = new User({
-          googleId,
-          email,
-          firstName: firstName || 'User',
-          lastName: lastName || '',
-          profilePicture,
-          emailVerified: true,
-          role: 'customer',
-          isActive: true,
-          // Generate temporary phone for compatibility
-          phone: `+91${Date.now().toString().slice(-10)}`
-        });
-        await user.save();
+        try {
+          user = new User({
+            googleId,
+            email,
+            firstName: firstName || 'User',
+            lastName: lastName || '',
+            profilePicture,
+            emailVerified: true,
+            role: 'customer',
+            isActive: true,
+            // Generate temporary phone for compatibility
+            phone: `+91${Date.now().toString().slice(-10)}`
+          });
+          await user.save();
+        } catch (saveError) {
+          console.error('Error creating Google OAuth user:', saveError);
+          throw new Error(`Failed to create user account: ${saveError.message}`);
+        }
       } else {
         // Update existing user with Google data
         if (!user.googleId) user.googleId = googleId;
