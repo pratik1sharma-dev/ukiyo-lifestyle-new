@@ -11,7 +11,7 @@ let mockUsers = [
     firstName: 'Demo',
     lastName: 'User',
     email: 'demo@ukiyo.com',
-    password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3L3jzjvG4G', // hashed "password123"
+    password: '$2a$12$u/0ZBvgJGXojER1UcE7tu.Jphf2RFH/Y.7su68hR88N9cIne07ddi', // hashed "password123"
     phone: '+91-9876543210',
     role: 'customer',
     isActive: true,
@@ -26,7 +26,7 @@ let mockUsers = [
     firstName: 'Admin',
     lastName: 'User',
     email: 'admin@ukiyo.com',
-    password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3L3jzjvG4G', // hashed "password123"
+    password: '$2a$12$u/0ZBvgJGXojER1UcE7tu.Jphf2RFH/Y.7su68hR88N9cIne07ddi', // hashed "password123"
     phone: '+91-9876543210',
     role: 'admin',
     isActive: true,
@@ -235,7 +235,7 @@ router.post('/register', async (req, res) => {
       message: `User registered successfully ${isMongoConnected() ? '' : '(using mock data)'}`,
       data: {
         user: isMongoConnected() ? user.getPublicProfile() : mockUserMethods.getPublicProfile(user),
-        token,
+        accessToken: token,  // Changed from 'token' to 'accessToken' for consistency
         refreshToken
       }
     });
@@ -329,7 +329,7 @@ router.post('/login', async (req, res) => {
       message: `Login successful ${isMongoConnected() ? '' : '(using mock data)'}`,
       data: {
         user: isMongoConnected() ? user.getPublicProfile() : mockUserMethods.getPublicProfile(user),
-        token,
+        accessToken: token,  // Changed from 'token' to 'accessToken' for consistency
         refreshToken
       }
     });

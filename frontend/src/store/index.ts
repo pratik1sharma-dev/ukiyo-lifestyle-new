@@ -347,6 +347,7 @@ interface AuthState {
   checkAuth: () => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
+  setAuthenticated: (authenticated: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -360,10 +361,10 @@ export const useAuthStore = create<AuthState>()(
         set({ loading: { isLoading: true, error: null } });
         try {
           const response = await authApi.login(email, password);
-          const { user, token, refreshToken } = response.data.data;
+          const { user, accessToken, refreshToken } = response.data.data;
           
           // Store tokens
-          localStorage.setItem('authToken', token);
+          localStorage.setItem('authToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
           
           set({ 
@@ -400,10 +401,10 @@ export const useAuthStore = create<AuthState>()(
         set({ loading: { isLoading: true, error: null } });
         try {
           const response = await authApi.register(userData);
-          const { user, token, refreshToken } = response.data.data;
+          const { user, accessToken, refreshToken } = response.data.data;
           
           // Store tokens
-          localStorage.setItem('authToken', token);
+          localStorage.setItem('authToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
           
           set({ 
@@ -496,6 +497,10 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user: User | null) => {
         set({ user, isAuthenticated: !!user });
+      },
+
+      setAuthenticated: (authenticated: boolean) => {
+        set({ isAuthenticated: authenticated });
       },
     }),
     {
