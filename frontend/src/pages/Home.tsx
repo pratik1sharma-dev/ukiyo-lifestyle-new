@@ -135,8 +135,12 @@ const Home: React.FC = () => {
                 Our Story
               </Link>
             </div>
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">About Image Placeholder</span>
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <img
+                src="/images/homepage.jpg"
+                alt="Ukiyo Lifestyle - Modern living in Delhi"
+                className="w-full h-full object-cover aspect-video"
+              />
             </div>
           </div>
         </div>
