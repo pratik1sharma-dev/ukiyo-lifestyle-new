@@ -24,16 +24,41 @@ const ProductDetail: React.FC = () => {
     }
   }, [currentProduct]);
 
+  const [addToCartState, setAddToCartState] = useState<{
+    isLoading: boolean;
+    isSuccess: boolean;
+    error: string | null;
+  }>({
+    isLoading: false,
+    isSuccess: false,
+    error: null
+  });
+
   const handleAddToCart = async () => {
     if (!currentProduct) return;
     
+    setAddToCartState({ isLoading: true, isSuccess: false, error: null });
+    
     try {
       await addToCart(currentProduct._id, quantity, selectedVariant);
-      // Show success message
-      alert('Product added to cart successfully!');
+      setAddToCartState({ isLoading: false, isSuccess: true, error: null });
+      
+      // Reset success state after 2 seconds
+      setTimeout(() => {
+        setAddToCartState(prev => ({ ...prev, isSuccess: false }));
+      }, 2000);
     } catch (error: any) {
       console.error('Failed to add to cart:', error);
-      alert(error.message || 'Failed to add product to cart');
+      setAddToCartState({ 
+        isLoading: false, 
+        isSuccess: false, 
+        error: error.message || 'Failed to add product to cart' 
+      });
+      
+      // Reset error state after 3 seconds
+      setTimeout(() => {
+        setAddToCartState(prev => ({ ...prev, error: null }));
+      }, 3000);
     }
   };
 
@@ -241,14 +266,44 @@ const ProductDetail: React.FC = () => {
               <div className="flex space-x-4">
                 <button
                   onClick={handleAddToCart}
-                  disabled={!product.inStock}
+                  disabled={!product.inStock || addToCartState.isLoading}
                   className={`flex-1 ${
-                    product.inStock
-                      ? 'btn-primary'
-                      : 'btn-ghost opacity-50 cursor-not-allowed'
+                    addToCartState.isSuccess
+                      ? 'bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out'
+                      : addToCartState.error
+                      ? 'bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out'
+                      : !product.inStock || addToCartState.isLoading
+                      ? 'btn-ghost opacity-50 cursor-not-allowed'
+                      : 'btn-primary'
                   }`}
                 >
-                  {isInCart ? 'Add More to Cart' : 'Add to Cart'}
+                  <div className="flex items-center justify-center">
+                    {addToCartState.isLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Adding...
+                      </>
+                    ) : addToCartState.isSuccess ? (
+                      <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Added to Cart!
+                      </>
+                    ) : addToCartState.error ? (
+                      <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Failed
+                      </>
+                    ) : (
+                      isInCart ? 'Add More to Cart' : 'Add to Cart'
+                    )}
+                  </div>
                 </button>
                 
                 <button
@@ -258,6 +313,13 @@ const ProductDetail: React.FC = () => {
                   View Cart
                 </button>
               </div>
+
+              {/* Error Message */}
+              {addToCartState.error && (
+                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{addToCartState.error}</p>
+                </div>
+              )}
             </div>
 
             {/* Product Details */}
