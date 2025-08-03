@@ -13,11 +13,17 @@ const app = express();
 
 // Middleware
 // CORS configuration for production
+const parseOrigins = (originString) => {
+  if (!originString) return [];
+  // Split by comma and trim whitespace
+  return originString.split(',').map(origin => origin.trim()).filter(Boolean);
+};
+
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? [
         'https://ukiyo-lifestyle-new.vercel.app', // Your Vercel domain
-        process.env.CORS_ORIGIN // Additional origins from environment variable
+        ...parseOrigins(process.env.CORS_ORIGIN) // Parse comma-separated origins
       ].filter(Boolean) // Remove any undefined values
     : ['http://localhost:3000', 'http://localhost:5173'], // Development origins
   credentials: true,
@@ -28,7 +34,8 @@ const corsOptions = {
 // Debug CORS configuration
 console.log('🔧 CORS Configuration:', {
   nodeEnv: process.env.NODE_ENV,
-  corsOrigin: process.env.CORS_ORIGIN,
+  corsOriginRaw: process.env.CORS_ORIGIN,
+  corsOriginParsed: parseOrigins(process.env.CORS_ORIGIN),
   allowedOrigins: corsOptions.origin
 });
 
