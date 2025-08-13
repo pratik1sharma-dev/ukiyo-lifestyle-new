@@ -1,17 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCartStore, useUIStore, useProductStore, useAuthStore } from '../../store';
+import { useCartStore, useUIStore, useAuthStore } from '../../store';
 import logoImage from '../../assets/logo.jpg';
 
 const Header: React.FC = () => {
   const { cart, toggleCart } = useCartStore();
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useUIStore();
-  const { categories, fetchCategories } = useProductStore();
   const { user, isAuthenticated, logout } = useAuthStore();
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   const cartItemCount = cart?.itemCount || 0;
 
@@ -33,49 +28,34 @@ const Header: React.FC = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             <Link
-              to="/"
-              className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Home
-            </Link>
-            <Link
               to="/products"
               className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
             >
-              Products
+              Solid Perfumes
             </Link>
-            
-            {/* Categories Dropdown */}
-            <div className="relative group">
-              <button className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors">
-                Categories
-              </button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="py-1">
-                  {categories.map((category) => (
-                    <Link
-                      key={category._id}
-                      to={`/products?category=${category.slug}`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
+            <Link
+              to="/discovery-kit"
+              className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+            >
+              Discovery Kit
+            </Link>
+            <Link
+              to="/bundles"
+              className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+            >
+              Bundles
+            </Link>
             <Link
               to="/about"
               className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
             >
-              About
+              Story
             </Link>
             <Link
-              to="/contact"
+              to="/support"
               className="text-gray-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
             >
-              Contact
+              Support
             </Link>
           </nav>
 
@@ -90,40 +70,39 @@ const Header: React.FC = () => {
                   </svg>
                   <span className="ml-1 text-sm hidden md:block">{user?.firstName}</span>
                 </button>
-                
-                                 {/* Dropdown Menu */}
-                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                   <Link
-                     to="/profile"
-                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                   >
-                     My Profile
-                   </Link>
-                   <Link
-                     to="/orders"
-                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                   >
-                     My Orders
-                   </Link>
-                   {user?.role === 'admin' && (
-                     <>
-                       <div className="border-t border-gray-100 my-1"></div>
-                       <Link
-                         to="/admin"
-                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium"
-                       >
-                         🔐 Admin Dashboard
-                       </Link>
-                     </>
-                   )}
-                   <div className="border-t border-gray-100 my-1"></div>
-                   <button
-                     onClick={logout}
-                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                   >
-                     Sign Out
-                   </button>
-                 </div>
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    My Profile
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    My Orders
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <>
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <Link
+                        to="/admin"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium"
+                      >
+                        🔐 Admin Dashboard
+                      </Link>
+                    </>
+                  )}
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               </div>
             ) : (
               <Link
@@ -158,13 +137,6 @@ const Header: React.FC = () => {
               )}
             </button>
 
-            {/* User Icon */}
-            <button className="text-gray-700 hover:text-primary-600 transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </button>
-
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
@@ -182,43 +154,53 @@ const Header: React.FC = () => {
           <div className="md:hidden border-t border-gray-200">
             <div className="py-2 space-y-1">
               <Link
-                to="/"
-                onClick={closeMobileMenu}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-              >
-                Home
-              </Link>
-              <Link
                 to="/products"
                 onClick={closeMobileMenu}
                 className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
               >
-                Products
+                Solid Perfumes
               </Link>
-              {categories.map((category) => (
-                <Link
-                  key={category._id}
-                  to={`/products?category=${category.slug}`}
-                  onClick={closeMobileMenu}
-                  className="block px-6 py-2 text-sm text-gray-600 hover:text-primary-600 hover:bg-gray-50"
-                >
-                  {category.name}
-                </Link>
-              ))}
+              <Link
+                to="/discovery-kit"
+                onClick={closeMobileMenu}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+              >
+                Discovery Kit
+              </Link>
+              <Link
+                to="/bundles"
+                onClick={closeMobileMenu}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+              >
+                Bundles
+              </Link>
               <Link
                 to="/about"
                 onClick={closeMobileMenu}
                 className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
               >
-                About
+                Story
               </Link>
               <Link
-                to="/contact"
+                to="/support"
                 onClick={closeMobileMenu}
                 className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
               >
-                Contact
+                Support
               </Link>
+            </div>
+            {/* Mobile USPs + shipping line */}
+            <div className="px-3 py-3 border-t border-gray-200">
+              <div className="text-sm text-gray-600">
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">Alcohol‑Free</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">6–8 Hour Wear</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">Skin‑Safe</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">Travel‑Friendly</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">Made in India</span>
+                </div>
+                <p className="text-gray-500">Ships in 24 hrs</p>
+              </div>
             </div>
           </div>
         )}

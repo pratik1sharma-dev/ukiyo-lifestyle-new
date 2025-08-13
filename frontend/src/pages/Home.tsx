@@ -11,31 +11,57 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-gray-50 to-gray-100 py-20">
+      {/* Hero Section - Solid Perfumes */}
+      <section className="bg-gradient-to-r from-gray-50 to-gray-100 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-cormorant font-bold text-gray-900 mb-6">
-              Ukiyo Lifestyle
+            <h1 className="text-4xl md:text-6xl font-cormorant font-bold text-gray-900 mb-4 md:mb-6">
+              Elevate Your Everyday Scent
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Discover premium lifestyle products that blend modern design with functionality. 
-              Curated for the contemporary Delhi lifestyle.
+            <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+              Alcohol‑free solid perfumes made in India. Pocket‑friendly, spill‑proof, travel‑ready.
             </p>
-            <div className="space-x-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <Link
                 to="/products"
-                className="btn-primary inline-block"
+                className="btn-primary w-full sm:w-auto"
               >
-                Shop Now
+                Shop Solid Perfumes
               </Link>
               <Link
-                to="/about"
-                className="btn-outline"
+                to="/bundles"
+                className="btn-outline w-full sm:w-auto"
               >
-                Learn More
+                Build Your Duo & Save 10%
               </Link>
             </div>
+            {/* USPs Bar */}
+            <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-gray-700">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-sm">Alcohol‑Free</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-sm">6–8 Hour Wear</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-sm">Skin‑Safe</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-sm">Travel‑Friendly</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-sm">Made in India</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof + Discovery Strip */}
+      <section className="bg-white py-8 md:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <p className="text-gray-900 font-medium">Loved by 25,000+ customers</p>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                <span className="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full">“Lasts through my workday”</span>
+                <span className="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full">“Perfect for travel”</span>
+                <span className="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full">“Subtle, skin‑safe scent”</span>
+              </div>
+            </div>
+            <Link to="/quiz" className="btn-secondary w-full md:w-auto">
+              Take the 60‑Second Scent Quiz
+            </Link>
           </div>
         </div>
       </section>
@@ -45,10 +71,10 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-cormorant font-bold text-gray-900 mb-4">
-              Featured Products
+              Featured Solid Perfumes
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Handpicked items that represent the best of modern lifestyle design
+              Handpicked blends designed for Indian weather—alcohol‑free, skin‑safe, and travel‑friendly.
             </p>
           </div>
 
@@ -105,43 +131,8 @@ const Home: React.FC = () => {
               to="/products"
               className="btn-primary"
             >
-              View All Products
+              Shop Solid Perfumes
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-cormorant font-bold text-gray-900 mb-6">
-                About Ukiyo Lifestyle
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Based in the heart of Delhi, Ukiyo Lifestyle brings you carefully curated 
-                products that embody the essence of modern living. Our collection focuses 
-                on quality, design, and functionality.
-              </p>
-              <p className="text-gray-600 mb-8">
-                From home decor to personal accessories, each item is selected to enhance 
-                your daily life with beauty and purpose.
-              </p>
-              <Link
-                to="/about"
-                className="btn-primary"
-              >
-                Our Story
-              </Link>
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <img
-                src="/images/homepage.jpg"
-                alt="Ukiyo Lifestyle - Modern living in Delhi"
-                className="w-full h-full object-cover aspect-video"
-              />
-            </div>
           </div>
         </div>
       </section>
