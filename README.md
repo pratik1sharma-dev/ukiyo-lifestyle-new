@@ -249,6 +249,8 @@ curl http://localhost:5000/health
 
 # Recent Updates — Solid Perfume PDP & Catalog
 
+Note for collaborators/agents: The authoritative status and next steps are tracked in `solid-perfume-d2c-brief.md`. Check the “Implementation Status” and “Next Actions Pointer” sections first.
+
 - Backend
   - Product schema: added optional fragrance fields: scentProfile[], noteFamily, strength/intensity, wearDuration, notes{top,heart,base}, ingredients[], vegan, crueltyFree, ifraCompliant, allergens[], shelfLifeMonths, tinSizeGrams, shippingOrigin, occasion[], weather[]
   - Catalog filters: GET /api/products now accepts noteFamily, intensity, occasion, weather, minPrice, maxPrice, inStock, sort (popular|newest|price_asc|price_desc)
