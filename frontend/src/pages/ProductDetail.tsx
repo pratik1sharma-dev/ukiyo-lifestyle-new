@@ -43,7 +43,6 @@ const ProductDetail: React.FC = () => {
       await addToCart(currentProduct._id, quantity, selectedVariant);
       setAddToCartState({ isLoading: false, isSuccess: true, error: null });
       
-      // Reset success state after 2 seconds
       setTimeout(() => {
         setAddToCartState(prev => ({ ...prev, isSuccess: false }));
       }, 2000);
@@ -55,10 +54,19 @@ const ProductDetail: React.FC = () => {
         error: error.message || 'Failed to add product to cart' 
       });
       
-      // Reset error state after 3 seconds
       setTimeout(() => {
         setAddToCartState(prev => ({ ...prev, error: null }));
       }, 3000);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!currentProduct) return;
+    try {
+      await addToCart(currentProduct._id, 1, selectedVariant);
+      navigate('/checkout');
+    } catch (error) {
+      // If add to cart fails, do nothing special; error UI already handled
     }
   };
 
@@ -93,6 +101,10 @@ const ProductDetail: React.FC = () => {
   const discountPercentage = product.comparePrice 
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
     : 0;
+
+  const scentChips = product.scentProfile || product.tags || [];
+  const strengthLabel = product.strength || 'Everyday';
+  const wearText = product.wearDuration || '6–8 hr wear';
 
   return (
     <div className="min-h-screen bg-white">
@@ -179,29 +191,35 @@ const ProductDetail: React.FC = () => {
               )}
             </div>
 
-            {/* Stock Status */}
-            <div className="flex items-center space-x-2">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                product.inStock 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {product.inStock ? (
-                  <>
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    In Stock ({product.inventory.quantity} available)
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                    Out of Stock
-                  </>
-                )}
-              </span>
+            {/* Scent profile chips */}
+            {scentChips.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {scentChips.map((chip, idx) => (
+                  <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full">
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Strength meter */}
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-1">
+                {['Subtle','Everyday','Bold'].map(level => (
+                  <span
+                    key={level}
+                    className={`h-2 w-10 rounded-full ${
+                      level === 'Subtle' ? 'bg-green-200' : level === 'Everyday' ? 'bg-green-400' : 'bg-green-600'
+                    } ${level === strengthLabel ? '' : 'opacity-30'}`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-gray-700">{strengthLabel} {wearText}</span>
+            </div>
+
+            {/* Trust line */}
+            <div className="text-sm text-gray-700">
+              Alcohol‑Free • Skin‑Safe • Travel‑Ready • Made in India
             </div>
 
             {/* Description */}
@@ -240,7 +258,7 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Quantity and Add to Cart */}
+            {/* Quantity and CTAs */}
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -263,11 +281,11 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex space-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   onClick={handleAddToCart}
                   disabled={!product.inStock || addToCartState.isLoading}
-                  className={`flex-1 ${
+                  className={`${
                     addToCartState.isSuccess
                       ? 'bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out'
                       : addToCartState.error
@@ -305,13 +323,7 @@ const ProductDetail: React.FC = () => {
                     )}
                   </div>
                 </button>
-                
-                <button
-                  onClick={() => navigate('/cart')}
-                  className="btn-outline"
-                >
-                  View Cart
-                </button>
+                <button onClick={handleBuyNow} className="btn-outline">Buy Now (UPI/Wallets)</button>
               </div>
 
               {/* Error Message */}
@@ -364,13 +376,90 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* Scent pyramid */}
+        {(product.notes?.top?.length || product.notes?.heart?.length || product.notes?.base?.length) && (
+          <div className="mt-16 border-t pt-16">
+            <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-6">Scent Pyramid</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 bg-gray-50 rounded-xl">
+                <h4 className="font-semibold text-gray-900 mb-2">Top</h4>
+                <p className="text-gray-700">{product.notes?.top?.join(', ') || '—'}</p>
+              </div>
+              <div className="p-6 bg-gray-50 rounded-xl">
+                <h4 className="font-semibold text-gray-900 mb-2">Heart</h4>
+                <p className="text-gray-700">{product.notes?.heart?.join(', ') || '—'}</p>
+              </div>
+              <div className="p-6 bg-gray-50 rounded-xl">
+                <h4 className="font-semibold text-gray-900 mb-2">Base</h4>
+                <p className="text-gray-700">{product.notes?.base?.join(', ') || '—'}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Why solid perfume? */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Why solid perfume?</h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2">
+            <li>Alcohol‑free, gentle on skin</li>
+            <li>No spills, no leaks — flight and gym‑bag friendly</li>
+            <li>Precise application on pulse points; great for layering</li>
+          </ul>
+        </div>
+
+        {/* Longevity & climate */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Longevity & climate</h2>
+          <p className="text-gray-700">Lasts {product.wearDuration || '6–8 hours'} on skin; reapply after 4 hours in humid weather.</p>
+          <p className="text-gray-700 mt-2">Tip: Warm on fingertip, dab on wrists, neck, behind ears.</p>
+        </div>
+
+        {/* Ingredients & safety */}
+        {(product.ingredients?.length || product.allergens?.length || product.vegan || product.crueltyFree || product.ifraCompliant || product.shelfLifeMonths) && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Ingredients & safety</h2>
+            {product.ingredients?.length ? (
+              <p className="text-gray-700">{product.ingredients.join(', ')}</p>
+            ) : (
+              <p className="text-gray-700">Beeswax/Candelilla Wax, Shea Butter, Natural Oils, IFRA‑compliant fragrance</p>
+            )}
+            <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-700">
+              {product.vegan && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
+              {product.crueltyFree && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
+              {product.ifraCompliant && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
+              {product.shelfLifeMonths && <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {product.shelfLifeMonths} months</span>}
+              {product.allergens?.length ? (
+                <span className="px-3 py-1 bg-gray-100 rounded-full">Allergens: {product.allergens.join(', ')}</span>
+              ) : null}
+            </div>
+          </div>
+        )}
+
+        {/* Size & packaging */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Size & packaging</h2>
+          <p className="text-gray-700">{product.tinSizeGrams || 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
+        </div>
+
+        {/* Shipping & returns */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Shipping & returns</h2>
+          <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin || 'Delhi'} • Delivery in 2–5 days.</p>
+          <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
+        </div>
+
+        {/* Reviews & Q&A placeholder for fragrance‑specific fields */}
+        <div className="mt-16 border-t pt-16">
+          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
+          <p className="text-gray-600">Coming soon: Scent Family, Longevity rating, Projection rating, Climate used, Skin type</p>
+        </div>
+
         {/* Related Products Section - Placeholder */}
         <div className="mt-16 border-t pt-16">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
             You Might Also Like
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Placeholder for related products */}
             {[1, 2, 3, 4].map((item) => (
               <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
                 <span className="text-gray-500">Related Product {item}</span>

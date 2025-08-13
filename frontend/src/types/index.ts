@@ -27,6 +27,24 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   tags?: string[]; // added to surface scent family or other labels
+
+  // Fragrance-specific (all optional to maintain backward compatibility)
+  scentProfile?: string[]; // e.g., ['Citrus', 'Woody', 'Fresh']
+  strength?: 'Subtle' | 'Everyday' | 'Bold';
+  wearDuration?: string; // e.g., '6–8 hours'
+  notes?: {
+    top?: string[];
+    heart?: string[];
+    base?: string[];
+  };
+  ingredients?: string[]; // e.g., ['Beeswax', 'Shea Butter', 'IFRA-compliant fragrance']
+  vegan?: boolean;
+  crueltyFree?: boolean;
+  ifraCompliant?: boolean;
+  allergens?: string[]; // e.g., ['Limonene', 'Linalool']
+  shelfLifeMonths?: number; // e.g., 24
+  tinSizeGrams?: number; // e.g., 10
+  shippingOrigin?: string; // e.g., 'Delhi, India'
 }
 
 export interface ProductVariant {
