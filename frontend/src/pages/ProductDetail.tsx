@@ -106,7 +106,7 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  const isInCart = cart?.items.some(item => item.product._id === currentProduct?._id);
+  const isInCart = !!cart?.items?.some((item: any) => item?.product?._id === currentProduct?._id);
 
   if (loading.isLoading) {
     return (
@@ -446,6 +446,73 @@ const ProductDetail: React.FC = () => {
                 )}
               </div>
             )}
+
+            {/* Why solid perfume? */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Why solid perfume?</h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-2">
+                <li>Alcohol‑free, gentle on skin</li>
+                <li>No spills, no leaks — flight and gym‑bag friendly</li>
+                <li>Precise application on pulse points; great for layering</li>
+              </ul>
+            </div>
+
+            {/* Longevity & climate */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Longevity & climate</h2>
+              <p className="text-gray-700">Lasts {product.wearDuration || '8 hours'} on skin; reapply after 4 hours in humid weather.</p>
+              <p className="text-gray-700 mt-2">Tip: Warm on fingertip, dab on wrists, neck, behind ears.</p>
+            </div>
+
+            {/* Ingredients & safety */}
+            {(product.ingredients?.length || product.allergens?.length || product.vegan || product.crueltyFree || product.ifraCompliant || product.shelfLifeMonths) && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Ingredients & safety</h2>
+                {product.ingredients?.length ? (
+                  <p className="text-gray-700">{product.ingredients.join(', ')}</p>
+                ) : (
+                  <p className="text-gray-700">Beeswax/Candelilla Wax, Shea Butter, Natural Oils, IFRA‑compliant fragrance</p>
+                )}
+                <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-700">
+                  {(product.vegan ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
+                  {(product.crueltyFree ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
+                  {(product.ifraCompliant ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
+                  <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {(product.shelfLifeMonths ?? 6)} months</span>
+                  {product.allergens?.length ? (
+                    <span className="px-3 py-1 bg-gray-100 rounded-full">Allergens: {product.allergens.join(', ')}</span>
+                  ) : null}
+                </div>
+              </div>
+            )}
+
+            {/* Size & packaging */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Size & packaging</h2>
+              <p className="text-gray-700">{product.tinSizeGrams ?? 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
+            </div>
+
+            {/* Shipping & returns */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Shipping & returns</h2>
+              <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin ?? 'Delhi'} • Delivery in 2–5 days.</p>
+              <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
+            </div>
+
+
+
+            {/* Related Products Section - Placeholder */}
+            <div className="mt-16 border-t pt-16">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
+                You Might Also Like
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((item) => (
+                  <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
+                    <span className="text-gray-500">Related Product {item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -469,57 +536,6 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Why solid perfume? */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Why solid perfume?</h2>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
-            <li>Alcohol‑free, gentle on skin</li>
-            <li>No spills, no leaks — flight and gym‑bag friendly</li>
-            <li>Precise application on pulse points; great for layering</li>
-          </ul>
-        </div>
-
-        {/* Longevity & climate */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Longevity & climate</h2>
-          <p className="text-gray-700">Lasts {product.wearDuration || '8 hours'} on skin; reapply after 4 hours in humid weather.</p>
-          <p className="text-gray-700 mt-2">Tip: Warm on fingertip, dab on wrists, neck, behind ears.</p>
-        </div>
-
-        {/* Ingredients & safety */}
-        {(product.ingredients?.length || product.allergens?.length || product.vegan || product.crueltyFree || product.ifraCompliant || product.shelfLifeMonths) && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Ingredients & safety</h2>
-            {product.ingredients?.length ? (
-              <p className="text-gray-700">{product.ingredients.join(', ')}</p>
-            ) : (
-              <p className="text-gray-700">Beeswax/Candelilla Wax, Shea Butter, Natural Oils, IFRA‑compliant fragrance</p>
-            )}
-            <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-700">
-              {(product.vegan ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
-              {(product.crueltyFree ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
-              {(product.ifraCompliant ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
-              <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {(product.shelfLifeMonths ?? 6)} months</span>
-              {product.allergens?.length ? (
-                <span className="px-3 py-1 bg-gray-100 rounded-full">Allergens: {product.allergens.join(', ')}</span>
-              ) : null}
-            </div>
-          </div>
-        )}
-
-        {/* Size & packaging */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Size & packaging</h2>
-          <p className="text-gray-700">{product.tinSizeGrams ?? 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
-        </div>
-
-        {/* Shipping & returns */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Shipping & returns</h2>
-          <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin ?? 'Delhi'} • Delivery in 2–5 days.</p>
-          <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
-        </div>
 
         {/* Reviews & Q&A */}
         <div className="mt-16 border-t pt-16">
@@ -579,20 +595,6 @@ const ProductDetail: React.FC = () => {
                 ))}
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Related Products Section - Placeholder */}
-        <div className="mt-16 border-t pt-16">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
-            You Might Also Like
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
-                <span className="text-gray-500">Related Product {item}</span>
-              </div>
-            ))}
           </div>
         </div>
       </div>
