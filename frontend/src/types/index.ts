@@ -26,6 +26,7 @@ export interface Product {
   sku?: string;
   createdAt: string;
   updatedAt: string;
+  tags?: string[]; // added to surface scent family or other labels
 }
 
 export interface ProductVariant {
@@ -132,5 +133,9 @@ export interface ProductFilters {
   maxPrice?: number;
   inStock?: boolean;
   search?: string;
-  sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest';
+  sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest' | 'popular';
+  noteFamily?: string[]; // Citrus, Floral, Woody, Oriental
+  intensity?: 'Subtle' | 'Everyday' | 'Bold';
+  occasion?: string[]; // Work, Day, Night, Festive
+  weather?: string[]; // Summer, Monsoon, Winter
 }
