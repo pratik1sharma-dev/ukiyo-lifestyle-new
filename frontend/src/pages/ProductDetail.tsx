@@ -446,6 +446,132 @@ const ProductDetail: React.FC = () => {
                 )}
               </div>
             )}
+
+            {/* Why solid perfume? */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Why solid perfume?</h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-2">
+                <li>Alcohol‑free, gentle on skin</li>
+                <li>No spills, no leaks — flight and gym‑bag friendly</li>
+                <li>Precise application on pulse points; great for layering</li>
+              </ul>
+            </div>
+
+            {/* Longevity & climate */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Longevity & climate</h2>
+              <p className="text-gray-700">Lasts {product.wearDuration || '8 hours'} on skin; reapply after 4 hours in humid weather.</p>
+              <p className="text-gray-700 mt-2">Tip: Warm on fingertip, dab on wrists, neck, behind ears.</p>
+            </div>
+
+            {/* Ingredients & safety */}
+            {(product.ingredients?.length || product.allergens?.length || product.vegan || product.crueltyFree || product.ifraCompliant || product.shelfLifeMonths) && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Ingredients & safety</h2>
+                {product.ingredients?.length ? (
+                  <p className="text-gray-700">{product.ingredients.join(', ')}</p>
+                ) : (
+                  <p className="text-gray-700">Beeswax/Candelilla Wax, Shea Butter, Natural Oils, IFRA‑compliant fragrance</p>
+                )}
+                <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-700">
+                  {(product.vegan ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
+                  {(product.crueltyFree ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
+                  {(product.ifraCompliant ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
+                  <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {(product.shelfLifeMonths ?? 6)} months</span>
+                  {product.allergens?.length ? (
+                    <span className="px-3 py-1 bg-gray-100 rounded-full">Allergens: {product.allergens.join(', ')}</span>
+                  ) : null}
+                </div>
+              </div>
+            )}
+
+            {/* Size & packaging */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Size & packaging</h2>
+              <p className="text-gray-700">{product.tinSizeGrams ?? 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
+            </div>
+
+            {/* Shipping & returns */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Shipping & returns</h2>
+              <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin ?? 'Delhi'} • Delivery in 2–5 days.</p>
+              <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
+            </div>
+
+            {/* Reviews & Q&A */}
+            <div className="mt-16 border-t pt-16">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
+              {/* Reviews */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+                {reviewsLoading ? (
+                  <p className="text-gray-500">Loading reviews...</p>
+                ) : reviews.length === 0 ? (
+                  <p className="text-gray-600">Be the first to review this fragrance.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map((rev) => (
+                      <div key={rev._id} className="p-4 border border-gray-200 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900">{rev.name || 'Anonymous'}</span>
+                            <span className="text-sm text-gray-600">{rev.scentFamily || product.noteFamily}</span>
+                          </div>
+                          <div className="text-sm text-gray-700">⭐ {rev.rating}</div>
+                        </div>
+                        {rev.title && <p className="mt-1 font-medium text-gray-900">{rev.title}</p>}
+                        {rev.comment && <p className="mt-1 text-gray-700">{rev.comment}</p>}
+                        <div className="mt-2 text-xs text-gray-500 flex flex-wrap gap-3">
+                          {rev.longevityRating && <span>Longevity: {rev.longevityRating}/5</span>}
+                          {rev.projectionRating && <span>Projection: {rev.projectionRating}/5</span>}
+                          {rev.climateUsed && <span>Climate: {rev.climateUsed}</span>}
+                          {rev.skinType && <span>Skin: {rev.skinType}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Q&A */}
+              <div className="space-y-4 mt-10">
+                <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
+                {questionsLoading ? (
+                  <p className="text-gray-500">Loading questions...</p>
+                ) : questions.length === 0 ? (
+                  <p className="text-gray-600">No questions yet. Ask about longevity, projection, or layering tips.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {questions.map((q) => (
+                      <div key={q._id} className="p-4 border border-gray-200 rounded-xl">
+                        <p className="text-gray-900"><span className="font-medium">Q:</span> {q.question}</p>
+                        {q.answers && q.answers.length > 0 && (
+                          <div className="mt-2 space-y-2">
+                            {q.answers.map((a: any, idx: number) => (
+                              <p key={idx} className="text-gray-700"><span className="font-medium">A:</span> {a.answer}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Related Products Section - Placeholder */}
+            <div className="mt-16 border-t pt-16">
+              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
+                You Might Also Like
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((item) => (
+                  <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
+                    <span className="text-gray-500">Related Product {item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -469,132 +595,6 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Why solid perfume? */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Why solid perfume?</h2>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
-            <li>Alcohol‑free, gentle on skin</li>
-            <li>No spills, no leaks — flight and gym‑bag friendly</li>
-            <li>Precise application on pulse points; great for layering</li>
-          </ul>
-        </div>
-
-        {/* Longevity & climate */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Longevity & climate</h2>
-          <p className="text-gray-700">Lasts {product.wearDuration || '8 hours'} on skin; reapply after 4 hours in humid weather.</p>
-          <p className="text-gray-700 mt-2">Tip: Warm on fingertip, dab on wrists, neck, behind ears.</p>
-        </div>
-
-        {/* Ingredients & safety */}
-        {(product.ingredients?.length || product.allergens?.length || product.vegan || product.crueltyFree || product.ifraCompliant || product.shelfLifeMonths) && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Ingredients & safety</h2>
-            {product.ingredients?.length ? (
-              <p className="text-gray-700">{product.ingredients.join(', ')}</p>
-            ) : (
-              <p className="text-gray-700">Beeswax/Candelilla Wax, Shea Butter, Natural Oils, IFRA‑compliant fragrance</p>
-            )}
-            <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-700">
-              {(product.vegan ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
-              {(product.crueltyFree ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
-              {(product.ifraCompliant ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
-              <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {(product.shelfLifeMonths ?? 6)} months</span>
-              {product.allergens?.length ? (
-                <span className="px-3 py-1 bg-gray-100 rounded-full">Allergens: {product.allergens.join(', ')}</span>
-              ) : null}
-            </div>
-          </div>
-        )}
-
-        {/* Size & packaging */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Size & packaging</h2>
-          <p className="text-gray-700">{product.tinSizeGrams ?? 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
-        </div>
-
-        {/* Shipping & returns */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Shipping & returns</h2>
-          <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin ?? 'Delhi'} • Delivery in 2–5 days.</p>
-          <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
-        </div>
-
-        {/* Reviews & Q&A */}
-        <div className="mt-16 border-t pt-16">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
-          {/* Reviews */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
-            {reviewsLoading ? (
-              <p className="text-gray-500">Loading reviews...</p>
-            ) : reviews.length === 0 ? (
-              <p className="text-gray-600">Be the first to review this fragrance.</p>
-            ) : (
-              <div className="space-y-4">
-                {reviews.map((rev) => (
-                  <div key={rev._id} className="p-4 border border-gray-200 rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">{rev.name || 'Anonymous'}</span>
-                        <span className="text-sm text-gray-600">{rev.scentFamily || product.noteFamily}</span>
-                      </div>
-                      <div className="text-sm text-gray-700">⭐ {rev.rating}</div>
-                    </div>
-                    {rev.title && <p className="mt-1 font-medium text-gray-900">{rev.title}</p>}
-                    {rev.comment && <p className="mt-1 text-gray-700">{rev.comment}</p>}
-                    <div className="mt-2 text-xs text-gray-500 flex flex-wrap gap-3">
-                      {rev.longevityRating && <span>Longevity: {rev.longevityRating}/5</span>}
-                      {rev.projectionRating && <span>Projection: {rev.projectionRating}/5</span>}
-                      {rev.climateUsed && <span>Climate: {rev.climateUsed}</span>}
-                      {rev.skinType && <span>Skin: {rev.skinType}</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Q&A */}
-          <div className="space-y-4 mt-10">
-            <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
-            {questionsLoading ? (
-              <p className="text-gray-500">Loading questions...</p>
-            ) : questions.length === 0 ? (
-              <p className="text-gray-600">No questions yet. Ask about longevity, projection, or layering tips.</p>
-            ) : (
-              <div className="space-y-4">
-                {questions.map((q) => (
-                  <div key={q._id} className="p-4 border border-gray-200 rounded-xl">
-                    <p className="text-gray-900"><span className="font-medium">Q:</span> {q.question}</p>
-                    {q.answers && q.answers.length > 0 && (
-                      <div className="mt-2 space-y-2">
-                        {q.answers.map((a: any, idx: number) => (
-                          <p key={idx} className="text-gray-700"><span className="font-medium">A:</span> {a.answer}</p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Related Products Section - Placeholder */}
-        <div className="mt-16 border-t pt-16">
-          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
-            You Might Also Like
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
-                <span className="text-gray-500">Related Product {item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
