@@ -1,3 +1,21 @@
+## Implementation Status
+
+- **Home (hero + USPs + social proof + quiz CTA)**: Completed
+- **Navigation (desktop + mobile USPs + “Ships in 24 hrs”)**: Completed
+- **Category/PLP**: Completed UI (filters for Note Family, Intensity, Occasion, Weather; Sort; Cards with badges, Quick Add; Empty state; PLP title/desc). Pending: ensure backend filtering supports new keys and card badges use dynamic scent data.
+- **PDP**:
+  - Completed: name, price/compare price, scent chips, strength meter with wear text, trust line, Add to Cart, Buy Now (navigates to Checkout), Scent pyramid, Why solid perfume, Longevity & climate, Ingredients & safety, Size & packaging, Shipping & returns (Delhi default), reviews/Q&A placeholder.
+  - Pending: reviews & Q&A data model + UI, optional description opener copy, optional “You save ₹X (Y%)” string.
+- **Data model**: Added optional fragrance fields to `Product` type (scentProfile, strength, wearDuration, notes, ingredients, vegan, crueltyFree, ifraCompliant, allergens, shelfLifeMonths, tinSizeGrams, shippingOrigin). Pending: map/populate from backend responses.
+- **Discovery & Bundles**: Pages present with correct messaging (Discovery Kit includes ₹299 redeem copy; Bundles includes duo/trio). Pending: duo/trio bundle builder, automatic discounts, gift note, tin engraving.
+- **How‑to & care**: Core guidance present on PDP. Pending: optional dedicated How‑To page/section.
+- **Cart/Mini‑cart**: Pending: free‑shipping progress bar, “Complete the set” cross‑sell, delivery ETA by pincode.
+- **Checkout**: Razorpay integrated. Pending: add microcopy blocks (secure payments via Razorpay; UPI fastest; GST included) and confidence row.
+- **Policy & trust**: Pending: dedicated policy page with INCI/IFRA statements, allergen disclosure, origin/manufacturer/batch/MRP/shelf life.
+- **SEO**: Pending for SPA—add per‑page titles/descriptions via `react-helmet-async` (Home/PDP templates from brief).
+- **Retention & community**: Quiz page exists. Pending: email capture + scent recommendations, post‑purchase tips flow, review request prompts with fragrance‑specific fields.
+- **Notes**: No breaking changes introduced; frontend build green.
+
 ## Single‑Category D2C Brief — Solid Perfumes Only
 
 Focus: scent discovery, confidence, low friction, and persuasive content.
