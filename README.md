@@ -246,3 +246,17 @@ curl http://localhost:5000/health
 - **Backend:** Robust API with error handling - ready for authentication and payment features
 
 **Status: Ready for next phase of development! 🚀** 
+
+# Recent Updates — Solid Perfume PDP & Catalog
+
+- Backend
+  - Product schema: added optional fragrance fields: scentProfile[], noteFamily, strength/intensity, wearDuration, notes{top,heart,base}, ingredients[], vegan, crueltyFree, ifraCompliant, allergens[], shelfLifeMonths, tinSizeGrams, shippingOrigin, occasion[], weather[]
+  - Catalog filters: GET /api/products now accepts noteFamily, intensity, occasion, weather, minPrice, maxPrice, inStock, sort (popular|newest|price_asc|price_desc)
+  - Admin API (create/update): accepts the above fields; arrays via CSV or JSON; notes via JSON or notesTop/notesHeart/notesBase; booleans via true/false
+- Frontend
+  - PLP: uses real badges for note family, strength, and 10g from data; “Lasts {wearDuration} • {tinSizeGrams}g”
+  - PDP: scent chips, strength meter, trust line, Buy Now CTA, Scent Pyramid, Why Solid Perfume, Longevity & Climate, Ingredients & Safety, Size & Packaging, Shipping & Returns
+  - Cart/Mini‑cart: free‑shipping progress bar; Cart includes simple pincode ETA text stub
+  - Checkout: trust copy (Razorpay secure, UPI fastest, GST included)
+- Non‑breaking: all fields optional; existing products continue to work
+- Next: wire backend SEO fields to titles/descriptions, reviews & Q&A model/UI, cross‑sell logic in PLP/Cart 
