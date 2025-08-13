@@ -48,6 +48,10 @@ export const productApi = {
     if (filters?.minPrice) params.append('minPrice', filters.minPrice.toString());
     if (filters?.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
     if (filters?.inStock !== undefined) params.append('inStock', filters.inStock.toString());
+    if (filters?.noteFamily && filters.noteFamily.length > 0) params.append('noteFamily', filters.noteFamily.join(','));
+    if (filters?.occasion && filters.occasion.length > 0) params.append('occasion', filters.occasion.join(','));
+    if (filters?.weather && filters.weather.length > 0) params.append('weather', filters.weather.join(','));
+    if (filters?.intensity) params.append('intensity', filters.intensity);
 
     return api.get(`/products?${params.toString()}`);
   },

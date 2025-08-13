@@ -128,12 +128,33 @@ const CartSidebar: React.FC = () => {
           {/* Footer */}
           {cart && cart.items && cart.items.filter(item => item && item.product).length > 0 && (
             <div className="border-t border-gray-200 p-4">
-                             <div className="flex justify-between items-center mb-4">
-                 <span className="text-lg font-semibold text-gray-900">Total:</span>
-                 <span className="text-lg font-semibold text-gray-900">
-                   ₹{(cart.total || 0).toFixed(2)}
-                 </span>
-               </div>
+              {/* Free shipping progress */}
+              {(() => {
+                const threshold = 999;
+                const subtotal = cart?.subtotal || 0;
+                const remaining = Math.max(0, threshold - subtotal);
+                const progress = Math.min(100, Math.round((subtotal / threshold) * 100));
+                return (
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-1 text-xs">
+                      <span className="text-gray-600">Free shipping at ₹{threshold}</span>
+                      <span className="text-gray-900 font-medium">{progress}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-primary-600" style={{ width: `${progress}%` }} />
+                    </div>
+                    <p className="mt-1 text-xs text-gray-600">
+                      {remaining > 0 ? `₹${remaining.toLocaleString()} away from free shipping` : 'Free shipping unlocked!'}
+                    </p>
+                  </div>
+                );
+              })()}
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-lg font-semibold text-gray-900">Total:</span>
+                <span className="text-lg font-semibold text-gray-900">
+                  ₹{(cart.total || 0).toFixed(2)}
+                </span>
+              </div>
               <div className="space-y-2">
                 <Link
                   to="/cart"
