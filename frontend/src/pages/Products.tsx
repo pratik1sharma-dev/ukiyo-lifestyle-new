@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useProductStore, useCartStore } from '../store';
 import type { ProductFilters } from '../types';
+import { Helmet } from 'react-helmet-async';
 
 const noteFamilies = ['Citrus', 'Floral', 'Woody', 'Oriental'];
 const occasions = ['Work', 'Day', 'Night', 'Festive'];
@@ -108,6 +109,11 @@ const Products: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title>Solid Perfumes for Every Day | Alcohol‑Free, Travel‑Friendly</title>
+        <meta name="description" content="Pocket‑friendly solid perfumes designed for Indian weather. Alcohol‑free, 6–8 hr wear. Free shipping and easy returns." />
+        <link rel="canonical" href={`${window.location.origin}/products`} />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
