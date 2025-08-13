@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProductStore, useCartStore } from '../store';
+import { productApi } from '../services/api';
+import { Helmet } from 'react-helmet-async';
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -11,6 +13,12 @@ const ProductDetail: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<string>('');
+
+  // Reviews & Q&A state
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState<boolean>(false);
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [questionsLoading, setQuestionsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (slug) {
@@ -23,6 +31,34 @@ const ProductDetail: React.FC = () => {
       setSelectedImage(0);
     }
   }, [currentProduct]);
+
+  useEffect(() => {
+    // Load reviews and questions lazily after product loads
+    const loadSocialProof = async () => {
+      if (!slug) return;
+      try {
+        setReviewsLoading(true);
+        const [r] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/${slug}`).then(res => res.json())
+        ]);
+        if (r?.success) setReviews(r.data.reviews || []);
+      } catch (e) {
+        // no-op
+      } finally {
+        setReviewsLoading(false);
+      }
+      try {
+        setQuestionsLoading(true);
+        const q = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/questions/${slug}`).then(res => res.json());
+        if (q?.success) setQuestions(q.data.questions || []);
+      } catch (e) {
+        // no-op
+      } finally {
+        setQuestionsLoading(false);
+      }
+    };
+    loadSocialProof();
+  }, [slug]);
 
   const [addToCartState, setAddToCartState] = useState<{
     isLoading: boolean;
@@ -106,8 +142,42 @@ const ProductDetail: React.FC = () => {
   const strengthLabel = product.strength || 'Everyday';
   const wearText = product.wearDuration || '8 hours';
 
+  const metaTitle = product.seo?.metaTitle || `${product.name} Solid Perfume | Alcohol‑Free Balm | Ukiyo`;
+  const metaDescription = product.seo?.metaDescription || `${product.noteFamily || 'Fragrance'} notes with ${wearText}. Alcohol‑free, skin‑safe, travel‑friendly tin. Ships in 24 hrs from ${product.shippingOrigin || 'Delhi'}.`;
+
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        {product.seo?.keywords?.length ? (
+          <meta name="keywords" content={product.seo.keywords.join(', ')} />
+        ) : null}
+        <link rel="canonical" href={`${window.location.origin}/products/${product.slug}`} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            image: product.images,
+            description: metaDescription,
+            sku: product.sku,
+            brand: { '@type': 'Brand', name: 'Ukiyo' },
+            aggregateRating: product.reviewCount ? {
+              '@type': 'AggregateRating',
+              ratingValue: product.rating || 4.8,
+              reviewCount: product.reviewCount,
+            } : undefined,
+            offers: {
+              '@type': 'Offer',
+              priceCurrency: 'INR',
+              price: product.price,
+              availability: product.inStock ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock',
+              url: `${window.location.origin}/products/${product.slug}`,
+            },
+          })}
+        </script>
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Breadcrumb */}
@@ -123,7 +193,7 @@ const ProductDetail: React.FC = () => {
           <span className="text-gray-900">{product.name}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           
           {/* Product Images */}
           <div className="space-y-4">
@@ -138,7 +208,7 @@ const ProductDetail: React.FC = () => {
 
             {/* Image Thumbnails */}
             {product.images.length > 1 && (
-              <div className="flex space-x-2 overflow-x-auto">
+              <div className="flex space-x-2 overflow-x-auto pb-1">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
@@ -169,13 +239,13 @@ const ProductDetail: React.FC = () => {
               >
                 {product.category.name}
               </Link>
-              <h1 className="text-3xl font-cormorant font-bold text-gray-900 mt-2">
+              <h1 className="text-3xl font-cormorant font-bold text-gray-900 mt-2 leading-tight">
                 {product.name}
               </h1>
             </div>
 
             {/* Price */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-baseline gap-3 flex-wrap">
               <span className="text-3xl font-bold text-gray-900">
                 ₹{product.price.toLocaleString()}
               </span>
@@ -451,10 +521,65 @@ const ProductDetail: React.FC = () => {
           <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
         </div>
 
-        {/* Reviews & Q&A placeholder for fragrance‑specific fields */}
+        {/* Reviews & Q&A */}
         <div className="mt-16 border-t pt-16">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
-          <p className="text-gray-600">Coming soon: Scent Family, Longevity rating, Projection rating, Climate used, Skin type</p>
+          {/* Reviews */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+            {reviewsLoading ? (
+              <p className="text-gray-500">Loading reviews...</p>
+            ) : reviews.length === 0 ? (
+              <p className="text-gray-600">Be the first to review this fragrance.</p>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((rev) => (
+                  <div key={rev._id} className="p-4 border border-gray-200 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">{rev.name || 'Anonymous'}</span>
+                        <span className="text-sm text-gray-600">{rev.scentFamily || product.noteFamily}</span>
+                      </div>
+                      <div className="text-sm text-gray-700">⭐ {rev.rating}</div>
+                    </div>
+                    {rev.title && <p className="mt-1 font-medium text-gray-900">{rev.title}</p>}
+                    {rev.comment && <p className="mt-1 text-gray-700">{rev.comment}</p>}
+                    <div className="mt-2 text-xs text-gray-500 flex flex-wrap gap-3">
+                      {rev.longevityRating && <span>Longevity: {rev.longevityRating}/5</span>}
+                      {rev.projectionRating && <span>Projection: {rev.projectionRating}/5</span>}
+                      {rev.climateUsed && <span>Climate: {rev.climateUsed}</span>}
+                      {rev.skinType && <span>Skin: {rev.skinType}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Q&A */}
+          <div className="space-y-4 mt-10">
+            <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
+            {questionsLoading ? (
+              <p className="text-gray-500">Loading questions...</p>
+            ) : questions.length === 0 ? (
+              <p className="text-gray-600">No questions yet. Ask about longevity, projection, or layering tips.</p>
+            ) : (
+              <div className="space-y-4">
+                {questions.map((q) => (
+                  <div key={q._id} className="p-4 border border-gray-200 rounded-xl">
+                    <p className="text-gray-900"><span className="font-medium">Q:</span> {q.question}</p>
+                    {q.answers && q.answers.length > 0 && (
+                      <div className="mt-2 space-y-2">
+                        {q.answers.map((a: any, idx: number) => (
+                          <p key={idx} className="text-gray-700"><span className="font-medium">A:</span> {a.answer}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Related Products Section - Placeholder */}

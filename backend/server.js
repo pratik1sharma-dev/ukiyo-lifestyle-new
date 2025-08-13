@@ -102,6 +102,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/questions', require('./routes/questions'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

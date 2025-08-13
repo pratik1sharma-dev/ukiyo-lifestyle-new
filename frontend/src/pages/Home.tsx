@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useProductStore } from '../store';
+import { Helmet } from 'react-helmet-async';
 
 const Home: React.FC = () => {
   const { featuredProducts, fetchFeaturedProducts, loading } = useProductStore();
@@ -11,6 +12,11 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Ukiyo Solid Perfumes — Alcohol‑Free, Travel‑Friendly, Made in India</title>
+        <meta name="description" content="Pocket‑friendly solid perfumes designed for Indian weather. 6–8 hr wear, spill‑proof tins. Free shipping, easy returns." />
+        <link rel="canonical" href={`${window.location.origin}/`} />
+      </Helmet>
       {/* Hero Section - Solid Perfumes */}
       <section className="bg-gradient-to-r from-gray-50 to-gray-100 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
