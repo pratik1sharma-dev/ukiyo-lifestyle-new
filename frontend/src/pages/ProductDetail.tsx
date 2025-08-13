@@ -106,7 +106,7 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  const isInCart = cart?.items.some(item => item.product._id === currentProduct?._id);
+  const isInCart = !!cart?.items?.some((item: any) => item?.product?._id === currentProduct?._id);
 
   if (loading.isLoading) {
     return (
