@@ -498,66 +498,7 @@ const ProductDetail: React.FC = () => {
               <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
             </div>
 
-            {/* Reviews & Q&A */}
-            <div className="mt-16 border-t pt-16">
-              <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
-              {/* Reviews */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
-                {reviewsLoading ? (
-                  <p className="text-gray-500">Loading reviews...</p>
-                ) : reviews.length === 0 ? (
-                  <p className="text-gray-600">Be the first to review this fragrance.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {reviews.map((rev) => (
-                      <div key={rev._id} className="p-4 border border-gray-200 rounded-xl">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-900">{rev.name || 'Anonymous'}</span>
-                            <span className="text-sm text-gray-600">{rev.scentFamily || product.noteFamily}</span>
-                          </div>
-                          <div className="text-sm text-gray-700">⭐ {rev.rating}</div>
-                        </div>
-                        {rev.title && <p className="mt-1 font-medium text-gray-900">{rev.title}</p>}
-                        {rev.comment && <p className="mt-1 text-gray-700">{rev.comment}</p>}
-                        <div className="mt-2 text-xs text-gray-500 flex flex-wrap gap-3">
-                          {rev.longevityRating && <span>Longevity: {rev.longevityRating}/5</span>}
-                          {rev.projectionRating && <span>Projection: {rev.projectionRating}/5</span>}
-                          {rev.climateUsed && <span>Climate: {rev.climateUsed}</span>}
-                          {rev.skinType && <span>Skin: {rev.skinType}</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
 
-              {/* Q&A */}
-              <div className="space-y-4 mt-10">
-                <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
-                {questionsLoading ? (
-                  <p className="text-gray-500">Loading questions...</p>
-                ) : questions.length === 0 ? (
-                  <p className="text-gray-600">No questions yet. Ask about longevity, projection, or layering tips.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {questions.map((q) => (
-                      <div key={q._id} className="p-4 border border-gray-200 rounded-xl">
-                        <p className="text-gray-900"><span className="font-medium">Q:</span> {q.question}</p>
-                        {q.answers && q.answers.length > 0 && (
-                          <div className="mt-2 space-y-2">
-                            {q.answers.map((a: any, idx: number) => (
-                              <p key={idx} className="text-gray-700"><span className="font-medium">A:</span> {a.answer}</p>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Related Products Section - Placeholder */}
             <div className="mt-16 border-t pt-16">
@@ -595,6 +536,67 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Reviews & Q&A */}
+        <div className="mt-16 border-t pt-16">
+          <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
+          {/* Reviews */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+            {reviewsLoading ? (
+              <p className="text-gray-500">Loading reviews...</p>
+            ) : reviews.length === 0 ? (
+              <p className="text-gray-600">Be the first to review this fragrance.</p>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((rev) => (
+                  <div key={rev._id} className="p-4 border border-gray-200 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">{rev.name || 'Anonymous'}</span>
+                        <span className="text-sm text-gray-600">{rev.scentFamily || product.noteFamily}</span>
+                      </div>
+                      <div className="text-sm text-gray-700">⭐ {rev.rating}</div>
+                    </div>
+                    {rev.title && <p className="mt-1 font-medium text-gray-900">{rev.title}</p>}
+                    {rev.comment && <p className="mt-1 text-gray-700">{rev.comment}</p>}
+                    <div className="mt-2 text-xs text-gray-500 flex flex-wrap gap-3">
+                      {rev.longevityRating && <span>Longevity: {rev.longevityRating}/5</span>}
+                      {rev.projectionRating && <span>Projection: {rev.projectionRating}/5</span>}
+                      {rev.climateUsed && <span>Climate: {rev.climateUsed}</span>}
+                      {rev.skinType && <span>Skin: {rev.skinType}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Q&A */}
+          <div className="space-y-4 mt-10">
+            <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
+            {questionsLoading ? (
+              <p className="text-gray-500">Loading questions...</p>
+            ) : questions.length === 0 ? (
+              <p className="text-gray-600">No questions yet. Ask about longevity, projection, or layering tips.</p>
+            ) : (
+              <div className="space-y-4">
+                {questions.map((q) => (
+                  <div key={q._id} className="p-4 border border-gray-200 rounded-xl">
+                    <p className="text-gray-900"><span className="font-medium">Q:</span> {q.question}</p>
+                    {q.answers && q.answers.length > 0 && (
+                      <div className="mt-2 space-y-2">
+                        {q.answers.map((a: any, idx: number) => (
+                          <p key={idx} className="text-gray-700"><span className="font-medium">A:</span> {a.answer}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
