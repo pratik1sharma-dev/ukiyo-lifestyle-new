@@ -492,7 +492,7 @@ const Checkout: React.FC = () => {
                             Credit/Debit Card, UPI, Net Banking
                           </div>
                           <div className="text-sm text-gray-500">
-                            Pay securely using Razorpay
+                            Secure payments via Razorpay • UPI is the fastest • No hidden fees — GST included
                           </div>
                         </div>
                       </label>

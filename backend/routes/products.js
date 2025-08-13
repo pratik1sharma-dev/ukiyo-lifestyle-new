@@ -6,8 +6,24 @@ const Category = require('../models/Category');
 // GET /api/products - Get all products
 router.get('/', async (req, res) => {
   try {
-    const { page = 1, limit = 12, category, search, sort = 'createdAt' } = req.query;
+    const {
+      page = 1,
+      limit = 12,
+      category,
+      search,
+      sort = 'newest',
+      noteFamily,
+      intensity, // maps to strength
+      occasion,
+      weather,
+      minPrice,
+      maxPrice,
+      inStock
+    } = req.query;
     
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
     let query = { isActive: true };
     
     // Filter by category
@@ -19,12 +35,72 @@ router.get('/', async (req, res) => {
     if (search) {
       query.$text = { $search: search };
     }
-    
+
+    // Note family filter (support comma-separated list)
+    if (noteFamily) {
+      const families = String(noteFamily).split(',').map(v => v.trim()).filter(Boolean);
+      if (families.length > 0) {
+        query.noteFamily = { $in: families };
+      }
+    }
+
+    // Intensity/Strength filter
+    if (intensity) {
+      query.strength = String(intensity);
+    }
+
+    // Occasion filter
+    if (occasion) {
+      const occ = String(occasion).split(',').map(v => v.trim()).filter(Boolean);
+      if (occ.length > 0) {
+        query.occasion = { $in: occ };
+      }
+    }
+
+    // Weather filter
+    if (weather) {
+      const w = String(weather).split(',').map(v => v.trim()).filter(Boolean);
+      if (w.length > 0) {
+        query.weather = { $in: w };
+      }
+    }
+
+    // Price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // In stock only
+    if (inStock === 'true') {
+      query['inventory.quantity'] = { $gt: 0 };
+    }
+
+    // Sorting
+    let sortSpec = { createdAt: -1 };
+    switch (String(sort)) {
+      case 'popular':
+        sortSpec = { rating: -1, reviewCount: -1 };
+        break;
+      case 'newest':
+        sortSpec = { createdAt: -1 };
+        break;
+      case 'price_asc':
+        sortSpec = { price: 1 };
+        break;
+      case 'price_desc':
+        sortSpec = { price: -1 };
+        break;
+      default:
+        sortSpec = { createdAt: -1 };
+    }
+
     const products = await Product.find(query)
       .populate('category', 'name slug')
-      .sort(sort === 'price' ? { price: 1 } : { createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .sort(sortSpec)
+      .limit(limitNum)
+      .skip((pageNum - 1) * limitNum);
     
     const total = await Product.countDocuments(query);
     
@@ -33,10 +109,10 @@ router.get('/', async (req, res) => {
       data: {
         products: products,
         pagination: {
-          current: parseInt(page),
-          total: Math.ceil(total / limit),
-          hasNext: page * limit < total,
-          hasPrev: page > 1
+          current: pageNum,
+          total: Math.ceil(total / limitNum),
+          hasNext: pageNum * limitNum < total,
+          hasPrev: pageNum > 1
         }
       }
     });

@@ -121,6 +121,28 @@ const productSchema = new mongoose.Schema({
     type: String,
     trim: true
   }],
+
+  // Fragrance-specific fields (all optional)
+  scentProfile: [{ type: String, trim: true }], // e.g., ['Citrus', 'Woody', 'Fresh']
+  noteFamily: { type: String, trim: true }, // e.g., 'Citrus'
+  strength: { type: String, enum: ['Subtle', 'Everyday', 'Bold'] },
+  wearDuration: { type: String, trim: true }, // e.g., '6–8 hours'
+  notes: {
+    top: [{ type: String, trim: true }],
+    heart: [{ type: String, trim: true }],
+    base: [{ type: String, trim: true }]
+  },
+  ingredients: [{ type: String, trim: true }],
+  vegan: { type: Boolean },
+  crueltyFree: { type: Boolean },
+  ifraCompliant: { type: Boolean },
+  allergens: [{ type: String, trim: true }],
+  shelfLifeMonths: { type: Number, min: [0, 'Shelf life must be non-negative'] },
+  tinSizeGrams: { type: Number, min: [0, 'Tin size must be non-negative'] },
+  shippingOrigin: { type: String, trim: true },
+  occasion: [{ type: String, trim: true }], // e.g., ['Work','Day']
+  weather: [{ type: String, trim: true }], // e.g., ['Summer','Monsoon']
+
   weight: {
     type: Number,
     min: [0, 'Weight cannot be negative']
@@ -170,6 +192,13 @@ productSchema.index({ name: 'text', description: 'text', tags: 'text' });
 productSchema.index({ category: 1, isActive: 1 });
 productSchema.index({ isFeatured: 1, isActive: 1 });
 productSchema.index({ slug: 1 });
+
+// Helpful indexes for catalog filters
+productSchema.index({ noteFamily: 1 });
+productSchema.index({ strength: 1 });
+productSchema.index({ 'notes.top': 1, 'notes.heart': 1, 'notes.base': 1 });
+productSchema.index({ occasion: 1 });
+productSchema.index({ weather: 1 });
 
 // Pre-save middleware to generate slug if not provided
 productSchema.pre('save', function(next) {

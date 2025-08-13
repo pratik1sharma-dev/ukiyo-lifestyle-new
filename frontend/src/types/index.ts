@@ -45,6 +45,12 @@ export interface Product {
   shelfLifeMonths?: number; // e.g., 24
   tinSizeGrams?: number; // e.g., 10
   shippingOrigin?: string; // e.g., 'Delhi, India'
+
+  // Catalog filter/badge fields
+  noteFamily?: string; // Citrus, Floral, Woody, Oriental
+  intensity?: 'Subtle' | 'Everyday' | 'Bold'; // alias for strength, if used by API/UI
+  occasion?: string[];
+  weather?: string[];
 }
 
 export interface ProductVariant {

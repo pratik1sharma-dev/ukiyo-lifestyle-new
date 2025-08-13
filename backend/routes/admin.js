@@ -39,6 +39,48 @@ const generateSlug = (name) => {
     .replace(/^-+|-+$/g, '');
 };
 
+// Helper function to parse comma-separated or JSON arrays
+const parseArray = (value) => {
+  if (value === undefined || value === null) return undefined;
+  if (Array.isArray(value)) return value;
+  const str = String(value).trim();
+  if (!str) return [];
+  try {
+    if (str.startsWith('[')) return JSON.parse(str);
+  } catch {}
+  return str.split(',').map(s => s.trim()).filter(Boolean);
+};
+
+const parseBool = (value) => {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === 'boolean') return value;
+  return String(value).toLowerCase() === 'true';
+};
+
+const parseNumber = (value) => {
+  if (value === undefined || value === null || value === '') return undefined;
+  const num = Number(value);
+  return Number.isNaN(num) ? undefined : num;
+};
+
+const parseNotes = (body) => {
+  if (body.notes) {
+    try {
+      const n = typeof body.notes === 'string' ? JSON.parse(body.notes) : body.notes;
+      return {
+        top: parseArray(n.top) || [],
+        heart: parseArray(n.heart) || [],
+        base: parseArray(n.base) || []
+      };
+    } catch {}
+  }
+  return {
+    top: parseArray(body.notesTop) || [],
+    heart: parseArray(body.notesHeart) || [],
+    base: parseArray(body.notesBase) || []
+  };
+};
+
 // ===================
 // CATEGORY MANAGEMENT
 // ===================
@@ -290,7 +332,26 @@ router.post('/products', authenticateToken, requireAdmin, uploadAnyImages, async
       stock,
       lowStockThreshold = 5,
       tags,
-      specifications
+      specifications,
+      noteFamily,
+      intensity, // alias for strength
+      strength,
+      wearDuration,
+      scentProfile,
+      ingredients,
+      vegan,
+      crueltyFree,
+      ifraCompliant,
+      allergens,
+      shelfLifeMonths,
+      tinSizeGrams,
+      shippingOrigin,
+      occasion,
+      weather,
+      notes,
+      notesTop,
+      notesHeart,
+      notesBase
     } = req.body;
 
     // Validation
@@ -331,7 +392,24 @@ router.post('/products', authenticateToken, requireAdmin, uploadAnyImages, async
         trackQuantity: true
       },
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-      specifications: specifications ? JSON.parse(specifications) : {}
+      specifications: specifications ? JSON.parse(specifications) : {},
+
+      // Fragrance fields
+      noteFamily: noteFamily || undefined,
+      strength: (strength || intensity) || undefined,
+      wearDuration: wearDuration || undefined,
+      scentProfile: parseArray(scentProfile),
+      ingredients: parseArray(ingredients),
+      vegan: parseBool(vegan),
+      crueltyFree: parseBool(crueltyFree),
+      ifraCompliant: parseBool(ifraCompliant),
+      allergens: parseArray(allergens),
+      shelfLifeMonths: parseNumber(shelfLifeMonths),
+      tinSizeGrams: parseNumber(tinSizeGrams),
+      shippingOrigin: shippingOrigin || undefined,
+      occasion: parseArray(occasion),
+      weather: parseArray(weather),
+      notes: parseNotes({ notes, notesTop, notesHeart, notesBase })
     });
 
     await product.save();
@@ -439,6 +517,70 @@ router.put('/products/:id', authenticateToken, requireAdmin, uploadAnyImages, as
     }
     
     updateData.images = currentImages;
+
+    // Fragrance fields updates
+    const {
+      noteFamily,
+      intensity,
+      strength,
+      wearDuration,
+      scentProfile,
+      ingredients,
+      vegan,
+      crueltyFree,
+      ifraCompliant,
+      allergens,
+      shelfLifeMonths,
+      tinSizeGrams,
+      shippingOrigin,
+      occasion,
+      weather,
+      notes,
+      notesTop,
+      notesHeart,
+      notesBase
+    } = req.body;
+
+    if (noteFamily !== undefined) updateData.noteFamily = noteFamily || undefined;
+    if (strength !== undefined || intensity !== undefined) updateData.strength = (strength || intensity) || undefined;
+    if (wearDuration !== undefined) updateData.wearDuration = wearDuration || undefined;
+
+    const sp = parseArray(scentProfile);
+    if (sp !== undefined) updateData.scentProfile = sp;
+
+    const ingr = parseArray(ingredients);
+    if (ingr !== undefined) updateData.ingredients = ingr;
+
+    const veg = parseBool(vegan);
+    if (veg !== undefined) updateData.vegan = veg;
+
+    const cf = parseBool(crueltyFree);
+    if (cf !== undefined) updateData.crueltyFree = cf;
+
+    const ifra = parseBool(ifraCompliant);
+    if (ifra !== undefined) updateData.ifraCompliant = ifra;
+
+    const allg = parseArray(allergens);
+    if (allg !== undefined) updateData.allergens = allg;
+
+    const slm = parseNumber(shelfLifeMonths);
+    if (slm !== undefined) updateData.shelfLifeMonths = slm;
+
+    const tsg = parseNumber(tinSizeGrams);
+    if (tsg !== undefined) updateData.tinSizeGrams = tsg;
+
+    if (shippingOrigin !== undefined) updateData.shippingOrigin = shippingOrigin || undefined;
+
+    const occ = parseArray(occasion);
+    if (occ !== undefined) updateData.occasion = occ;
+
+    const w = parseArray(weather);
+    if (w !== undefined) updateData.weather = w;
+
+    const n = parseNotes({ notes, notesTop, notesHeart, notesBase });
+    if (n && (n.top?.length || n.heart?.length || n.base?.length)) {
+      updateData.notes = n;
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true })
       .populate('category', 'name slug');

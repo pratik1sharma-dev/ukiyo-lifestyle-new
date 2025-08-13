@@ -104,6 +104,30 @@ const Cart: React.FC = () => {
           </button>
         </div>
 
+        {/* Free shipping progress */}
+        <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
+          {(() => {
+            const threshold = 999; // configurable
+            const subtotal = cart.subtotal || 0;
+            const remaining = Math.max(0, threshold - subtotal);
+            const progress = Math.min(100, Math.round((subtotal / threshold) * 100));
+            return (
+              <div>
+                <div className="flex items-center justify-between mb-2 text-sm">
+                  <span className="text-gray-700">Free shipping at ₹{threshold}</span>
+                  <span className="text-gray-900 font-medium">{progress}%</span>
+                </div>
+                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-primary-600" style={{ width: `${progress}%` }} />
+                </div>
+                <p className="mt-2 text-sm text-gray-700">
+                  {remaining > 0 ? `You’re ₹${remaining.toLocaleString()} away from free shipping` : 'You’ve unlocked free shipping!'}
+                </p>
+              </div>
+            );
+          })()}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Cart Items */}
@@ -205,6 +229,16 @@ const Cart: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
               
+              {/* Delivery ETA by pincode */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Check delivery ETA</label>
+                <div className="flex gap-2">
+                  <input type="text" maxLength={6} placeholder="Enter pincode" className="flex-1 input-primary" onChange={() => {}} />
+                  <button className="btn-outline btn-sm" onClick={() => {}}>Check</button>
+                </div>
+                <p className="mt-2 text-xs text-gray-600">Order today, delivery by Wed–Fri to 1100XX</p>
+              </div>
+
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>

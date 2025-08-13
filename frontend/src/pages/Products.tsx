@@ -299,9 +299,15 @@ const Products: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center gap-2 mb-2 text-xs text-gray-700">
-                        <span className="px-2 py-0.5 rounded-full bg-gray-100">Scent Family</span>
-                        <span className="px-2 py-0.5 rounded-full bg-gray-100">Everyday</span>
-                        <span className="px-2 py-0.5 rounded-full bg-gray-100">10g</span>
+                        {product.noteFamily || product.scentProfile?.[0] ? (
+                          <span className="px-2 py-0.5 rounded-full bg-gray-100">{product.noteFamily || product.scentProfile?.[0]}</span>
+                        ) : null}
+                        {product.strength || product.intensity ? (
+                          <span className="px-2 py-0.5 rounded-full bg-gray-100">{product.strength || product.intensity}</span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-gray-100">Everyday</span>
+                        )}
+                        <span className="px-2 py-0.5 rounded-full bg-gray-100">{product.tinSizeGrams ? `${product.tinSizeGrams}g` : '10g'}</span>
                       </div>
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                         {product.shortDescription || product.description}
@@ -323,7 +329,7 @@ const Products: React.FC = () => {
                       </button>
                     </div>
                     <div className="mt-2 text-xs text-gray-600">
-                      <span>Lasts 6–8 hrs • Pocket‑friendly 10g</span>
+                      <span>Lasts {product.wearDuration || '6–8 hrs'} • Pocket‑friendly {product.tinSizeGrams ? `${product.tinSizeGrams}g` : '10g'}</span>
                     </div>
                   </div>
                 ))}
