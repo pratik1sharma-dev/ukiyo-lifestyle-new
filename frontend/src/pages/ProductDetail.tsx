@@ -104,7 +104,7 @@ const ProductDetail: React.FC = () => {
 
   const scentChips = product.scentProfile || product.tags || [];
   const strengthLabel = product.strength || 'Everyday';
-  const wearText = product.wearDuration || '6–8 hr wear';
+  const wearText = product.wearDuration || '8 hours';
 
   return (
     <div className="min-h-screen bg-white">
@@ -220,6 +220,9 @@ const ProductDetail: React.FC = () => {
             {/* Trust line */}
             <div className="text-sm text-gray-700">
               Alcohol‑Free • Skin‑Safe • Travel‑Ready • Made in India
+              {product.vegan ?? true ? ' • Vegan' : ''}
+              {product.crueltyFree ?? true ? ' • Cruelty‑Free' : ''}
+              {product.ifraCompliant ?? true ? ' • IFRA‑Compliant' : ''}
             </div>
 
             {/* Description */}
@@ -410,7 +413,7 @@ const ProductDetail: React.FC = () => {
         {/* Longevity & climate */}
         <div className="mt-12">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Longevity & climate</h2>
-          <p className="text-gray-700">Lasts {product.wearDuration || '6–8 hours'} on skin; reapply after 4 hours in humid weather.</p>
+          <p className="text-gray-700">Lasts {product.wearDuration || '8 hours'} on skin; reapply after 4 hours in humid weather.</p>
           <p className="text-gray-700 mt-2">Tip: Warm on fingertip, dab on wrists, neck, behind ears.</p>
         </div>
 
@@ -424,10 +427,10 @@ const ProductDetail: React.FC = () => {
               <p className="text-gray-700">Beeswax/Candelilla Wax, Shea Butter, Natural Oils, IFRA‑compliant fragrance</p>
             )}
             <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-700">
-              {product.vegan && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
-              {product.crueltyFree && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
-              {product.ifraCompliant && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
-              {product.shelfLifeMonths && <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {product.shelfLifeMonths} months</span>}
+              {(product.vegan ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Vegan</span>}
+              {(product.crueltyFree ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">Cruelty‑free</span>}
+              {(product.ifraCompliant ?? true) && <span className="px-3 py-1 bg-gray-100 rounded-full">IFRA‑compliant</span>}
+              <span className="px-3 py-1 bg-gray-100 rounded-full">Shelf life: {(product.shelfLifeMonths ?? 6)} months</span>
               {product.allergens?.length ? (
                 <span className="px-3 py-1 bg-gray-100 rounded-full">Allergens: {product.allergens.join(', ')}</span>
               ) : null}
@@ -438,13 +441,13 @@ const ProductDetail: React.FC = () => {
         {/* Size & packaging */}
         <div className="mt-12">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Size & packaging</h2>
-          <p className="text-gray-700">{product.tinSizeGrams || 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
+          <p className="text-gray-700">{product.tinSizeGrams ?? 10}g tin (approx. 3–4 months of daily use). Leak‑proof, pocket‑friendly tin; recyclable packaging.</p>
         </div>
 
         {/* Shipping & returns */}
         <div className="mt-12">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-4">Shipping & returns</h2>
-          <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin || 'Delhi'} • Delivery in 2–5 days.</p>
+          <p className="text-gray-700">Ships in 24 hrs from {product.shippingOrigin ?? 'Delhi'} • Delivery in 2–5 days.</p>
           <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
         </div>
 

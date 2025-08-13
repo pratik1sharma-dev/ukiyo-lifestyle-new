@@ -126,20 +126,20 @@ const productSchema = new mongoose.Schema({
   scentProfile: [{ type: String, trim: true }], // e.g., ['Citrus', 'Woody', 'Fresh']
   noteFamily: { type: String, trim: true }, // e.g., 'Citrus'
   strength: { type: String, enum: ['Subtle', 'Everyday', 'Bold'] },
-  wearDuration: { type: String, trim: true }, // e.g., '6–8 hours'
+  wearDuration: { type: String, trim: true, default: '8 hours' }, // e.g., '8 hours'
   notes: {
-    top: [{ type: String, trim: true }],
-    heart: [{ type: String, trim: true }],
-    base: [{ type: String, trim: true }]
+    top: { type: [String], default: [], set: v => Array.isArray(v) ? v : (v ? [v] : []) },
+    heart: { type: [String], default: [], set: v => Array.isArray(v) ? v : (v ? [v] : []) },
+    base: { type: [String], default: [], set: v => Array.isArray(v) ? v : (v ? [v] : []) }
   },
   ingredients: [{ type: String, trim: true }],
-  vegan: { type: Boolean },
-  crueltyFree: { type: Boolean },
-  ifraCompliant: { type: Boolean },
+  vegan: { type: Boolean, default: true },
+  crueltyFree: { type: Boolean, default: true },
+  ifraCompliant: { type: Boolean, default: true },
   allergens: [{ type: String, trim: true }],
-  shelfLifeMonths: { type: Number, min: [0, 'Shelf life must be non-negative'] },
-  tinSizeGrams: { type: Number, min: [0, 'Tin size must be non-negative'] },
-  shippingOrigin: { type: String, trim: true },
+  shelfLifeMonths: { type: Number, min: [0, 'Shelf life must be non-negative'], default: 6 },
+  tinSizeGrams: { type: Number, min: [0, 'Tin size must be non-negative'], default: 10 },
+  shippingOrigin: { type: String, trim: true, default: 'Delhi' },
   occasion: [{ type: String, trim: true }], // e.g., ['Work','Day']
   weather: [{ type: String, trim: true }], // e.g., ['Summer','Monsoon']
 

@@ -329,7 +329,7 @@ const Products: React.FC = () => {
                       </button>
                     </div>
                     <div className="mt-2 text-xs text-gray-600">
-                      <span>Lasts {product.wearDuration || '6–8 hrs'} • Pocket‑friendly {product.tinSizeGrams ? `${product.tinSizeGrams}g` : '10g'}</span>
+                      <span>Lasts {product.wearDuration || '8 hours'} • Pocket‑friendly {product.tinSizeGrams ? `${product.tinSizeGrams}g` : '10g'}</span>
                     </div>
                   </div>
                 ))}
