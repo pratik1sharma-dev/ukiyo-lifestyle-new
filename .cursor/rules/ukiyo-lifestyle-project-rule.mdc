@@ -3,3 +3,35 @@ description:
 globs:
 alwaysApply: false
 ---
+
+# Working Agreement
+- Do not introduce breaking changes; all new fields must be optional and backward compatible.
+- Prefer additive edits; avoid refactors unless explicitly requested.
+- After any backend or data model change, verify APIs load and run a quick frontend build.
+
+# Source of Truth
+- Status and next steps: see `solid-perfume-d2c-brief.md` (Implementation Status + Next Actions Pointer).
+- High-level architecture: `ARCHITECTURE.md`; project layout: `PROJECT_STRUCTURE.md`.
+- Backend entry: `backend/server.js`; Frontend entry: `frontend/src/App.tsx`.
+
+# E‑commerce Perfume Focus
+- Single category: solid perfumes; prioritize PDP and discovery UX.
+- Keep fragrance fields optional: `scentProfile`, `noteFamily`, `strength`/`intensity`, `wearDuration`, `notes{top,heart,base}`, `ingredients`, `vegan`, `crueltyFree`, `ifraCompliant`, `allergens`, `shelfLifeMonths`, `tinSizeGrams`, `shippingOrigin`, `occasion`, `weather`.
+
+# Backend Rules
+- Product schema: `backend/models/Product.js` includes the fragrance fields above.
+- Product list filters: `GET /api/products` supports `noteFamily`, `intensity`, `occasion`, `weather`, `minPrice`, `maxPrice`, `inStock`, `sort`.
+- Admin create/update: accept arrays via CSV or JSON; notes via JSON or `notesTop/notesHeart/notesBase`; booleans as true/false.
+
+# Frontend Rules
+- PLP and PDP must render gracefully if fragrance fields are missing.
+- Use safe defaults: wearDuration -> "6–8 hrs", tinSizeGrams -> 10g.
+- Keep CTAs intact and cart/checkout flows unchanged.
+
+# Testing Checklist
+- Build frontend: `cd frontend && npm run build` (should be green).
+- Load backend files: requiring `backend/models/Product`, `backend/routes/products`, `backend/routes/admin` should not throw.
+
+# Communication
+- Document updates in `README.md` under “Recent Updates — Solid Perfume PDP & Catalog”.
+- When in doubt, update `solid-perfume-d2c-brief.md` first, then implement.
