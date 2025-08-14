@@ -197,16 +197,27 @@ router.get('/id/:id', async (req, res) => {
 // GET /api/products/:slug - Get product by slug
 router.get('/:slug', async (req, res) => {
   try {
-    const product = await Product.findOne({ 
+    const productDoc = await Product.findOne({ 
       slug: req.params.slug, 
       isActive: true 
     }).populate('category', 'name slug');
     
-    if (!product) {
+    if (!productDoc) {
       return res.status(404).json({
         success: false,
         message: 'Product not found'
       });
+    }
+
+    // Enrich with latest aggregated rating/reviewCount
+    let product = productDoc.toObject();
+    const agg = await Review.aggregate([
+      { $match: { product: productDoc._id } },
+      { $group: { _id: '$product', avgRating: { $avg: '$rating' }, count: { $sum: 1 } } },
+    ]);
+    if (agg.length > 0) {
+      product.rating = Math.round(agg[0].avgRating * 10) / 10;
+      product.reviewCount = agg[0].count;
     }
     
     res.json({
