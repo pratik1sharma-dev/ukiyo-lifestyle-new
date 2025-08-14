@@ -2,22 +2,27 @@
 
 - **Home (hero + USPs + social proof + quiz CTA)**: Completed
 - **Navigation (desktop + mobile USPs + “Ships in 24 hrs”)**: Completed
-- **Category/PLP**: Completed UI (filters for Note Family, Intensity, Occasion, Weather; Sort; Cards with badges, Quick Add; Empty state; PLP title/desc). Backend filtering implemented; PLP badges now use dynamic scent/strength/tin size.
+- **Category/PLP**: Completed UI (filters for Note Family, Intensity, Occasion, Weather; Sort; Cards with badges, Quick Add; Empty state; PLP title/desc). Backend filtering implemented; PLP badges now use dynamic scent/strength/tin size. Ratings aggregated from reviews and shown on cards.
 - **PDP**:
-  - Completed: name, price/compare price, scent chips, strength meter with wear text, trust line, Add to Cart, Buy Now (navigates to Checkout), Scent pyramid, Why solid perfume, Longevity & climate, Ingredients & safety, Size & packaging, Shipping & returns (Delhi default), reviews/Q&A placeholder.
-  - Pending: reviews & Q&A data model + UI, optional description opener copy, optional “You save ₹X (Y%)” string.
-- **Data model**: Implemented optional fragrance fields in backend schema and exposed via APIs; frontend type aligned. Admin create/update supports setting all fields (CSV/JSON for arrays; JSON for notes; booleans supported).
-- **Discovery & Bundles**: Pages present with correct messaging (Discovery Kit includes ₹299 redeem copy; Bundles includes duo/trio). Pending: duo/trio bundle builder, automatic discounts, gift note, tin engraving.
+  - Completed: name, price/compare price, “You save ₹X (Y%)”, scent chips, strength meter with wear text, trust line, Add to Cart, Buy Now (navigates to Checkout), Scent pyramid, Why solid perfume, Longevity & climate, Ingredients & safety, Size & packaging, Shipping & returns (Delhi default), reviews list (aggregated) & Q&A list (aggregated), related products (“You Might Also Like”), description opener copy.
+  - Pending: reviews & Q&A submission UI (with scent/longevity/projection fields).
+- **Data model**: Implemented optional fragrance fields in backend schema and exposed via APIs; frontend type aligned. Admin create/update supports setting all fields (CSV/JSON for arrays; JSON for notes; booleans supported). Added `descriptionOpener` to `Product`.
+- **Discovery & Bundles**: Duo/Trio bundle builder implemented with automatic discounts (10%/15%), gift note and tin engraving captured and stored in cart.
+  - Pending: apply bundle discount to order totals/payment flow and display in Checkout summary; persist gift note/engraving into Order; admin visibility.
 - **How‑to & care**: Core guidance present on PDP. Pending: optional dedicated How‑To page/section.
 - **Cart/Mini‑cart**: Implemented free‑shipping progress bar (cart + mini‑cart). Pending: “Complete the set” cross‑sell, real delivery ETA by pincode service.
-- **Checkout**: Razorpay integrated; trust microcopy added (secure payments, UPI fastest, GST included). Pending: confidence row block styling.
+- **Checkout**: Razorpay integrated; trust microcopy added (secure payments, UPI fastest, GST included). Pending: confidence row block styling; reflect bundle discount/gifting details in summary.
 - **Policy & trust**: Pending: dedicated policy page with INCI/IFRA statements, allergen disclosure, origin/manufacturer/batch/MRP/shelf life.
-- **SEO**: Pending for SPA—add per‑page titles/descriptions via `react-helmet-async` (Home/PDP templates from brief).
+- **SEO**: Partially done — per‑page titles/descriptions and canonicals added for Home/PLP/PDP. Pending: OG/Twitter tags and meta for Bundles/Discovery/Support/etc.
 - **Retention & community**: Quiz page exists. Pending: email capture + scent recommendations, post‑purchase tips flow, review request prompts with fragrance‑specific fields.
 - **Notes**: No breaking changes introduced; frontend build green.
 
 ### Next Actions Pointer
-- Future agents: Use this file (`solid-perfume-d2c-brief.md`) for latest status and priorities. Finish items marked “Pending” above, starting with Reviews & Q&A, SEO meta, and Cart cross‑sell.
+- Prioritize: 
+  - Wire bundle discount and gift note/engraving through Checkout and into Order (pricing.discount, notes).
+  - Add Reviews & Q&A submission UI on PDP (with scent/longevity/projection fields).
+  - Expand SEO meta across remaining pages + OG/Twitter cards.
+  - Implement Cart/Mini‑cart cross‑sell (“Complete the set”) and delivery ETA by pincode.
 
 ## Single‑Category D2C Brief — Solid Perfumes Only
 
