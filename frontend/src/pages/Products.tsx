@@ -300,8 +300,8 @@ const Products: React.FC = () => {
                         <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
                           {product.name}
                         </h3>
-                        {product.rating !== undefined && (
-                          <span className="text-xs text-gray-600">⭐ {product.rating?.toFixed(1) || '4.5'}</span>
+                        {(product.reviewCount ?? 0) > 0 && (
+                          <span className="text-xs text-gray-600">⭐ {product.rating?.toFixed(1)}</span>
                         )}
                       </div>
                       <div className="flex items-center gap-2 mb-2 text-xs text-gray-700">

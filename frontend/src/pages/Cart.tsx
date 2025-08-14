@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store';
+import { productApi } from '../services/api';
+import type { Product } from '../types';
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
@@ -13,9 +15,25 @@ const Cart: React.FC = () => {
     clearCart 
   } = useCartStore();
 
+  const [pincode, setPincode] = useState('');
+  const [eta, setEta] = useState<string>('');
+  const [crossSell, setCrossSell] = useState<Product[]>([]);
+
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
+
+  useEffect(() => {
+    // Load simple cross-sell: top popular products not already in cart
+    (async () => {
+      try {
+        const res = await productApi.getProducts({ limit: 8, sort: 'popular' });
+        const inCartIds = new Set((cart?.items || []).map(i => i.product._id));
+        const items = (res.data.data?.products || []).filter((p: Product) => !inCartIds.has(p._id)).slice(0, 4);
+        setCrossSell(items);
+      } catch {}
+    })();
+  }, [cart?.items]);
 
   const handleQuantityChange = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -43,6 +61,23 @@ const Cart: React.FC = () => {
       }
     }
   };
+
+  const checkEta = () => {
+    if (!/^\d{6}$/.test(pincode)) {
+      setEta('Enter a valid 6-digit pincode');
+      return;
+    }
+    // Dummy ETA range: 2–5 days from today
+    const minDays = 2;
+    const maxDays = 5;
+    const start = new Date();
+    start.setDate(start.getDate() + minDays);
+    const end = new Date();
+    end.setDate(end.getDate() + maxDays);
+    const formatDay = (d: Date) => d.toLocaleDateString('en-IN', { weekday: 'short' });
+    setEta(`Order today, delivery by ${formatDay(start)}–${formatDay(end)}`);
+  };
+
 
   if (loading.isLoading) {
     return (
@@ -233,10 +268,10 @@ const Cart: React.FC = () => {
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Check delivery ETA</label>
                 <div className="flex gap-2">
-                  <input type="text" maxLength={6} placeholder="Enter pincode" className="flex-1 input-primary" onChange={() => {}} />
-                  <button className="btn-outline btn-sm" onClick={() => {}}>Check</button>
+                  <input type="text" maxLength={6} placeholder="Enter pincode" className="flex-1 input-primary" value={pincode} onChange={(e) => setPincode(e.target.value)} />
+                  <button className="btn-outline btn-sm" onClick={checkEta}>Check</button>
                 </div>
-                <p className="mt-2 text-xs text-gray-600">Order today, delivery by Wed–Fri to 1100XX</p>
+                {eta && <p className="mt-2 text-xs text-gray-600">{eta}</p>}
               </div>
 
               <div className="space-y-3 mb-6">
@@ -244,16 +279,26 @@ const Cart: React.FC = () => {
                   <span className="text-gray-600">Subtotal</span>
                   <span className="text-gray-900">₹{(cart.subtotal || 0).toLocaleString()}</span>
                 </div>
-                
+                {cart?.discount ? (
+                  <div className="flex justify-between text-sm text-green-700">
+                    <span>Bundle Discount</span>
+                    <span>-₹{cart.discount.toLocaleString()}</span>
+                  </div>
+                ) : null}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax (GST Inclusive)</span>
                   <span className="text-gray-900">₹0</span>
                 </div>
-                
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-gray-900">Free</span>
                 </div>
+                {cart?.giftNote || cart?.engraving ? (
+                  <div className="mt-1 text-xs text-gray-600">
+                    {cart.giftNote ? (<div>Gift note: {cart.giftNote}</div>) : null}
+                    {cart.engraving ? (<div>Engraving: “{cart.engraving}”</div>) : null}
+                  </div>
+                ) : null}
                 
                 <div className="border-t pt-3">
                   <div className="flex justify-between">
@@ -303,25 +348,26 @@ const Cart: React.FC = () => {
           </div>
         </div>
 
-        {/* Recently Viewed or Recommended Products */}
+        {/* Cross‑sell: Complete the set */}
         <div className="mt-16">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
-            You Might Also Like
+            Complete the set
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Placeholder for recommended products */}
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-white rounded-lg shadow-sm p-4">
-                <div className="bg-gray-100 rounded-lg aspect-square mb-4 flex items-center justify-center">
-                  <span className="text-gray-500">Product {item}</span>
-                </div>
-                <h3 className="font-medium text-gray-900 mb-2">Recommended Product {item}</h3>
-                <p className="text-gray-600 text-sm mb-2">Product description here</p>
+            {crossSell.map((p) => (
+              <div key={p._id} className="bg-white rounded-lg shadow-sm p-4">
+                <Link to={`/products/${p.slug}`}>
+                  <div className="bg-gray-100 rounded-lg aspect-square mb-4 overflow-hidden">
+                    <img src={p.images[0] || '/images/placeholders/placeholder-product.svg'} className="w-full h-full object-cover" />
+                  </div>
+                </Link>
+                <h3 className="font-medium text-gray-900 mb-1 line-clamp-1">{p.name}</h3>
+                {(p.reviewCount ?? 0) > 0 && <div className="text-xs text-gray-600 mb-1">⭐ {p.rating?.toFixed(1)}</div>}
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-900">₹999</span>
-                  <button className="px-3 py-1 bg-primary-600 text-white text-sm rounded hover:bg-primary-700">
-                    Add to Cart
-                  </button>
+                  <span className="font-bold text-gray-900">₹{p.price.toLocaleString()}</span>
+                  <Link to={`/products/${p.slug}`} className="px-3 py-1 bg-primary-600 text-white text-sm rounded hover:bg-primary-700">
+                    View
+                  </Link>
                 </div>
               </div>
             ))}

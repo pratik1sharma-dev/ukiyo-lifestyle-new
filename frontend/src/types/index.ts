@@ -5,6 +5,7 @@ export interface Product {
   slug: string;
   description: string;
   shortDescription?: string;
+  descriptionOpener?: string;
   price: number;
   comparePrice?: number;
   images: string[];
@@ -86,10 +87,14 @@ export interface Cart {
   _id: string;
   items: CartItem[];
   subtotal: number;
+  discount?: number;
   tax: number;
   shipping: number;
   total: number;
   itemCount: number;
+  bundle?: { count?: number; discountPct?: number; productIds?: string[] };
+  giftNote?: string;
+  engraving?: string;
 }
 
 // User types

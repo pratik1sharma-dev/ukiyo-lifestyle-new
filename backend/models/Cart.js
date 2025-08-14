@@ -45,7 +45,17 @@ const cartSchema = new mongoose.Schema({
     default: function() {
       return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
     }
-  }
+  },
+  // Bundle/discount and gifting metadata
+  discount: { type: Number, default: 0, min: 0 },
+  bundle: {
+    count: { type: Number },
+    discountPct: { type: Number },
+    productIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    appliedAt: { type: Date }
+  },
+  giftNote: { type: String, trim: true, maxlength: 500 },
+  engraving: { type: String, trim: true, maxlength: 50 }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
@@ -64,7 +74,9 @@ cartSchema.virtual('itemCount').get(function() {
 
 // Virtual for cart total (GST inclusive, free shipping)
 cartSchema.virtual('total').get(function() {
-  return this.subtotal; // Total equals subtotal since GST is included and shipping is free
+  const subtotal = this.subtotal;
+  const discount = this.discount || 0;
+  return Math.max(0, subtotal - discount); // Apply discount
 });
 
 // Virtual for tax amount (GST is already included in prices)
@@ -155,6 +167,10 @@ cartSchema.methods.removeItem = function(productId, variant) {
 // Instance method to clear cart
 cartSchema.methods.clearCart = function() {
   this.items = [];
+  this.discount = 0;
+  this.bundle = undefined;
+  this.giftNote = undefined;
+  this.engraving = undefined;
   return this.save();
 };
 

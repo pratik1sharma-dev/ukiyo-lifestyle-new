@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProductStore, useCartStore } from '../store';
 import { productApi } from '../services/api';
 import { Helmet } from 'react-helmet-async';
+import type { Product } from '../types';
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -19,6 +20,9 @@ const ProductDetail: React.FC = () => {
   const [reviewsLoading, setReviewsLoading] = useState<boolean>(false);
   const [questions, setQuestions] = useState<any[]>([]);
   const [questionsLoading, setQuestionsLoading] = useState<boolean>(false);
+
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (slug) {
@@ -59,6 +63,31 @@ const ProductDetail: React.FC = () => {
     };
     loadSocialProof();
   }, [slug]);
+
+  useEffect(() => {
+    // Fetch related products (by category, fallback to popular) once product is available
+    const loadRelated = async () => {
+      if (!currentProduct) return;
+      try {
+        setRelatedLoading(true);
+        // Try by same category first
+        const byCategory = await productApi.getProducts({ limit: 8, sort: 'popular', category: currentProduct.category._id });
+        let items: Product[] = (byCategory.data.data?.products || []).filter((p: Product) => p._id !== currentProduct._id);
+        if (items.length < 4) {
+          // Fallback: general popular
+          const general = await productApi.getProducts({ limit: 8, sort: 'popular' });
+          const fill: Product[] = (general.data.data?.products || []).filter((p: Product) => p._id !== currentProduct._id && !items.find(i => i._id === p._id));
+          items = [...items, ...fill];
+        }
+        setRelatedProducts(items.slice(0, 4));
+      } catch (e) {
+        setRelatedProducts([]);
+      } finally {
+        setRelatedLoading(false);
+      }
+    };
+    loadRelated();
+  }, [currentProduct]);
 
   const [addToCartState, setAddToCartState] = useState<{
     isLoading: boolean;
@@ -242,6 +271,14 @@ const ProductDetail: React.FC = () => {
               <h1 className="text-3xl font-cormorant font-bold text-gray-900 mt-2 leading-tight">
                 {product.name}
               </h1>
+              {(product.reviewCount ?? 0) > 0 && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-gray-700">
+                  <span>⭐ {product.rating?.toFixed(1)}</span>
+                  <a href="#reviews" className="hover:text-primary-600">
+                    ({product.reviewCount} {product.reviewCount === 1 ? 'review' : 'reviews'})
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Price */}
@@ -256,6 +293,9 @@ const ProductDetail: React.FC = () => {
                   </span>
                   <span className="bg-red-100 text-red-800 text-sm font-medium px-2 py-1 rounded">
                     {discountPercentage}% OFF
+                  </span>
+                  <span className="text-sm text-gray-700">
+                    You save ₹{(product.comparePrice - product.price).toLocaleString()} ({discountPercentage}%)
                   </span>
                 </>
               )}
@@ -298,6 +338,9 @@ const ProductDetail: React.FC = () => {
             {/* Description */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+              {product.descriptionOpener && (
+                <p className="text-gray-800 mb-2">{product.descriptionOpener}</p>
+              )}
               <p className="text-gray-600 leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
@@ -498,20 +541,52 @@ const ProductDetail: React.FC = () => {
               <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
             </div>
 
-
-
-            {/* Related Products Section - Placeholder */}
+            {/* Related Products Section */}
             <div className="mt-16 border-t pt-16">
               <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
                 You Might Also Like
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[1, 2, 3, 4].map((item) => (
-                  <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
-                    <span className="text-gray-500">Related Product {item}</span>
-                  </div>
-                ))}
-              </div>
+              {relatedLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <div key={idx} className="bg-gray-100 rounded-lg aspect-square animate-pulse" />
+                  ))}
+                </div>
+              ) : relatedProducts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {relatedProducts.map((rp) => (
+                    <div key={rp._id} className="card card-hover group">
+                      <Link to={`/products/${rp.slug}`}>
+                        <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square">
+                          <img
+                            src={rp.images?.[0] || '/images/placeholders/placeholder-product.svg'}
+                            alt={rp.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-1">
+                          {rp.name}
+                        </h3>
+                        {(rp.reviewCount ?? 0) > 0 && (
+                          <div className="text-xs text-gray-600 mb-2">⭐ {rp.rating?.toFixed(1)}</div>
+                        )}
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-gray-900">
+                            ₹{rp.price.toLocaleString()}
+                          </span>
+                          {rp.comparePrice && (
+                            <span className="text-sm text-gray-500 line-through">
+                              ₹{rp.comparePrice.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-600">Explore our full range in the Products page.</div>
+              )}
             </div>
           </div>
         </div>
@@ -538,11 +613,63 @@ const ProductDetail: React.FC = () => {
         )}
 
         {/* Reviews & Q&A */}
-        <div className="mt-16 border-t pt-16">
+        <div id="reviews" className="mt-16 border-t pt-16">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
           {/* Reviews */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+            {/* Submit Review */}
+            <div className="p-4 border border-gray-200 rounded-xl">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget as HTMLFormElement;
+                  const data = new FormData(form);
+                  const payload: any = Object.fromEntries(data.entries());
+                  payload.rating = Number(payload.rating);
+                  payload.longevityRating = payload.longevityRating ? Number(payload.longevityRating) : undefined;
+                  payload.projectionRating = payload.projectionRating ? Number(payload.projectionRating) : undefined;
+                  try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/${product.slug}`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('authToken') || ''}` },
+                      body: JSON.stringify(payload),
+                    });
+                    const j = await res.json();
+                    if (j?.success) {
+                      setReviews((prev) => [j.data, ...prev]);
+                      (e.target as HTMLFormElement).reset();
+                    }
+                  } catch {}
+                }}
+                className="space-y-3"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input name="name" placeholder="Your name" className="input-primary" />
+                  <select name="rating" required className="input-primary">
+                    <option value="">Rating*</option>
+                    {[5,4,3,2,1].map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <input name="scentFamily" placeholder="Scent family (e.g., Citrus)" className="input-primary" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <select name="longevityRating" className="input-primary">
+                    <option value="">Longevity /5</option>
+                    {[5,4,3,2,1].map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <select name="projectionRating" className="input-primary">
+                    <option value="">Projection /5</option>
+                    {[5,4,3,2,1].map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <input name="climateUsed" placeholder="Climate (e.g., Summer)" className="input-primary" />
+                </div>
+                <input name="title" placeholder="Title (optional)" className="input-primary" />
+                <textarea name="comment" placeholder="Your review" className="input-primary" rows={3} />
+                <div className="text-right">
+                  <button type="submit" className="btn-outline btn-sm">Submit Review</button>
+                </div>
+              </form>
+            </div>
             {reviewsLoading ? (
               <p className="text-gray-500">Loading reviews...</p>
             ) : reviews.length === 0 ? (
@@ -575,6 +702,38 @@ const ProductDetail: React.FC = () => {
           {/* Q&A */}
           <div className="space-y-4 mt-10">
             <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
+            {/* Ask a question */}
+            <div className="p-4 border border-gray-200 rounded-xl">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget as HTMLFormElement;
+                  const data = new FormData(form);
+                  const payload: any = Object.fromEntries(data.entries());
+                  try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/questions/${product.slug}`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('authToken') || ''}` },
+                      body: JSON.stringify(payload),
+                    });
+                    const j = await res.json();
+                    if (j?.success) {
+                      setQuestions((prev) => [j.data, ...prev]);
+                      (e.target as HTMLFormElement).reset();
+                    }
+                  } catch {}
+                }}
+                className="space-y-3"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input name="name" placeholder="Your name" className="input-primary" />
+                  <input name="question" placeholder="Ask a question (e.g., longevity, projection)" required className="input-primary" />
+                  <div className="text-right sm:text-left">
+                    <button type="submit" className="btn-outline btn-sm">Ask</button>
+                  </div>
+                </div>
+              </form>
+            </div>
             {questionsLoading ? (
               <p className="text-gray-500">Loading questions...</p>
             ) : questions.length === 0 ? (

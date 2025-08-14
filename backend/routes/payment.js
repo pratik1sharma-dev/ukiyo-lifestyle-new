@@ -387,10 +387,10 @@ router.post('/create-order', authenticateToken, async (req, res) => {
       paymentDetails: {},
       pricing: {
         subtotal: cart.subtotal,
-        discount: 0,
+        discount: cart.discount || 0,
         shippingCost: 0, // No shipping fees
         tax: 0, // GST is already included in prices
-        total: cart.subtotal // Total equals subtotal since tax and shipping are 0
+        total: (cart.subtotal - (cart.discount || 0))
       },
       shipping: {
         method: 'standard',
@@ -398,7 +398,7 @@ router.post('/create-order', authenticateToken, async (req, res) => {
         estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       },
       notes: {
-        customerNotes: '',
+        customerNotes: (cart.giftNote ? `Gift note: ${cart.giftNote}` : '') + (cart.engraving ? (cart.giftNote ? ' | ' : '') + `Engraving: ${cart.engraving}` : ''),
         adminNotes: ''
       },
       timeline: [{

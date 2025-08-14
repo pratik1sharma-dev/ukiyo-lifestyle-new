@@ -22,6 +22,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     maxlength: [200, 'Short description cannot exceed 200 characters']
   },
+  descriptionOpener: {
+    type: String,
+    maxlength: [400, 'Description opener cannot exceed 400 characters']
+  },
   price: {
     type: Number,
     required: [true, 'Product price is required'],
