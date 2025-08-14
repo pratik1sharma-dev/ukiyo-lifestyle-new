@@ -242,6 +242,14 @@ const ProductDetail: React.FC = () => {
               <h1 className="text-3xl font-cormorant font-bold text-gray-900 mt-2 leading-tight">
                 {product.name}
               </h1>
+              {(product.reviewCount ?? 0) > 0 && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-gray-700">
+                  <span>⭐ {product.rating?.toFixed(1)}</span>
+                  <a href="#reviews" className="hover:text-primary-600">
+                    ({product.reviewCount} {product.reviewCount === 1 ? 'review' : 'reviews'})
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Price */}
@@ -538,7 +546,7 @@ const ProductDetail: React.FC = () => {
         )}
 
         {/* Reviews & Q&A */}
-        <div className="mt-16 border-t pt-16">
+        <div id="reviews" className="mt-16 border-t pt-16">
           <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">Reviews & Q&A</h2>
           {/* Reviews */}
           <div className="space-y-4">
