@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProductStore, useCartStore } from '../store';
 import { productApi } from '../services/api';
 import { Helmet } from 'react-helmet-async';
+import type { Product } from '../types';
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -19,6 +20,9 @@ const ProductDetail: React.FC = () => {
   const [reviewsLoading, setReviewsLoading] = useState<boolean>(false);
   const [questions, setQuestions] = useState<any[]>([]);
   const [questionsLoading, setQuestionsLoading] = useState<boolean>(false);
+
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (slug) {
@@ -59,6 +63,31 @@ const ProductDetail: React.FC = () => {
     };
     loadSocialProof();
   }, [slug]);
+
+  useEffect(() => {
+    // Fetch related products (by category, fallback to popular) once product is available
+    const loadRelated = async () => {
+      if (!currentProduct) return;
+      try {
+        setRelatedLoading(true);
+        // Try by same category first
+        const byCategory = await productApi.getProducts({ limit: 8, sort: 'popular', category: currentProduct.category._id });
+        let items: Product[] = (byCategory.data.data?.products || []).filter((p: Product) => p._id !== currentProduct._id);
+        if (items.length < 4) {
+          // Fallback: general popular
+          const general = await productApi.getProducts({ limit: 8, sort: 'popular' });
+          const fill: Product[] = (general.data.data?.products || []).filter((p: Product) => p._id !== currentProduct._id && !items.find(i => i._id === p._id));
+          items = [...items, ...fill];
+        }
+        setRelatedProducts(items.slice(0, 4));
+      } catch (e) {
+        setRelatedProducts([]);
+      } finally {
+        setRelatedLoading(false);
+      }
+    };
+    loadRelated();
+  }, [currentProduct]);
 
   const [addToCartState, setAddToCartState] = useState<{
     isLoading: boolean;
@@ -506,20 +535,52 @@ const ProductDetail: React.FC = () => {
               <p className="text-gray-700 mt-2">Hygiene policy: unopened Discovery Kits returnable within 10 days.</p>
             </div>
 
-
-
-            {/* Related Products Section - Placeholder */}
+            {/* Related Products Section */}
             <div className="mt-16 border-t pt-16">
               <h2 className="text-2xl font-cormorant font-bold text-gray-900 mb-8">
                 You Might Also Like
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[1, 2, 3, 4].map((item) => (
-                  <div key={item} className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
-                    <span className="text-gray-500">Related Product {item}</span>
-                  </div>
-                ))}
-              </div>
+              {relatedLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <div key={idx} className="bg-gray-100 rounded-lg aspect-square animate-pulse" />
+                  ))}
+                </div>
+              ) : relatedProducts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {relatedProducts.map((rp) => (
+                    <div key={rp._id} className="card card-hover group">
+                      <Link to={`/products/${rp.slug}`}>
+                        <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square">
+                          <img
+                            src={rp.images?.[0] || '/images/placeholders/placeholder-product.svg'}
+                            alt={rp.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-1">
+                          {rp.name}
+                        </h3>
+                        {(rp.reviewCount ?? 0) > 0 && (
+                          <div className="text-xs text-gray-600 mb-2">⭐ {rp.rating?.toFixed(1)}</div>
+                        )}
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-gray-900">
+                            ₹{rp.price.toLocaleString()}
+                          </span>
+                          {rp.comparePrice && (
+                            <span className="text-sm text-gray-500 line-through">
+                              ₹{rp.comparePrice.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-600">Explore our full range in the Products page.</div>
+              )}
             </div>
           </div>
         </div>
