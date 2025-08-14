@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useProductStore, useCartStore } from '../store';
 import type { Product } from '../types';
 import { cartApi } from '../services/api';
+import { Helmet } from 'react-helmet-async';
 
 const Bundles: React.FC = () => {
   const navigate = useNavigate();
@@ -48,8 +49,27 @@ const Bundles: React.FC = () => {
     navigate('/checkout', { state: { bundle: { count: selectedProducts.length, discountPct, giftNote, engraving } } });
   };
 
+  const title = 'Build Your Duo/Trio — Save 10–15% | Ukiyo';
+  const description = 'Select 2 or 3 solid perfumes. Save automatically at checkout. Optional gift note and tin engraving available.';
+  const url = `${window.location.origin}/bundles`;
+  const image = '/images/placeholders/placeholder-product.svg';
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={url} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={url} />
+        <meta property="og:image" content={image} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={image} />
+      </Helmet>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-cormorant font-bold text-gray-900 mb-2">Build Your Duo/Trio</h1>

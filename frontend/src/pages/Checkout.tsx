@@ -587,10 +587,22 @@ const Checkout: React.FC = () => {
                   <span>Tax (GST Inclusive)</span>
                   <span>₹0</span>
                 </div>
+                {cart?.discount ? (
+                  <div className="flex justify-between text-sm text-green-700">
+                    <span>Bundle Discount</span>
+                    <span>-₹{cart.discount.toLocaleString()}</span>
+                  </div>
+                ) : null}
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
                   <span>Free</span>
                 </div>
+                {cart?.giftNote || cart?.engraving ? (
+                  <div className="mt-2 text-xs text-gray-600">
+                    {cart.giftNote ? (<div>Gift note: {cart.giftNote}</div>) : null}
+                    {cart.engraving ? (<div>Engraving: “{cart.engraving}”</div>) : null}
+                  </div>
+                ) : null}
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between text-base font-medium">
                     <span>Total</span>

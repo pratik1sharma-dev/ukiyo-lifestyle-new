@@ -618,6 +618,58 @@ const ProductDetail: React.FC = () => {
           {/* Reviews */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+            {/* Submit Review */}
+            <div className="p-4 border border-gray-200 rounded-xl">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget as HTMLFormElement;
+                  const data = new FormData(form);
+                  const payload: any = Object.fromEntries(data.entries());
+                  payload.rating = Number(payload.rating);
+                  payload.longevityRating = payload.longevityRating ? Number(payload.longevityRating) : undefined;
+                  payload.projectionRating = payload.projectionRating ? Number(payload.projectionRating) : undefined;
+                  try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/${product.slug}`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('authToken') || ''}` },
+                      body: JSON.stringify(payload),
+                    });
+                    const j = await res.json();
+                    if (j?.success) {
+                      setReviews((prev) => [j.data, ...prev]);
+                      (e.target as HTMLFormElement).reset();
+                    }
+                  } catch {}
+                }}
+                className="space-y-3"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input name="name" placeholder="Your name" className="input-primary" />
+                  <select name="rating" required className="input-primary">
+                    <option value="">Rating*</option>
+                    {[5,4,3,2,1].map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <input name="scentFamily" placeholder="Scent family (e.g., Citrus)" className="input-primary" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <select name="longevityRating" className="input-primary">
+                    <option value="">Longevity /5</option>
+                    {[5,4,3,2,1].map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <select name="projectionRating" className="input-primary">
+                    <option value="">Projection /5</option>
+                    {[5,4,3,2,1].map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <input name="climateUsed" placeholder="Climate (e.g., Summer)" className="input-primary" />
+                </div>
+                <input name="title" placeholder="Title (optional)" className="input-primary" />
+                <textarea name="comment" placeholder="Your review" className="input-primary" rows={3} />
+                <div className="text-right">
+                  <button type="submit" className="btn-outline btn-sm">Submit Review</button>
+                </div>
+              </form>
+            </div>
             {reviewsLoading ? (
               <p className="text-gray-500">Loading reviews...</p>
             ) : reviews.length === 0 ? (
@@ -650,6 +702,38 @@ const ProductDetail: React.FC = () => {
           {/* Q&A */}
           <div className="space-y-4 mt-10">
             <h3 className="text-lg font-semibold text-gray-900">Questions & Answers</h3>
+            {/* Ask a question */}
+            <div className="p-4 border border-gray-200 rounded-xl">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget as HTMLFormElement;
+                  const data = new FormData(form);
+                  const payload: any = Object.fromEntries(data.entries());
+                  try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/questions/${product.slug}`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('authToken') || ''}` },
+                      body: JSON.stringify(payload),
+                    });
+                    const j = await res.json();
+                    if (j?.success) {
+                      setQuestions((prev) => [j.data, ...prev]);
+                      (e.target as HTMLFormElement).reset();
+                    }
+                  } catch {}
+                }}
+                className="space-y-3"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input name="name" placeholder="Your name" className="input-primary" />
+                  <input name="question" placeholder="Ask a question (e.g., longevity, projection)" required className="input-primary" />
+                  <div className="text-right sm:text-left">
+                    <button type="submit" className="btn-outline btn-sm">Ask</button>
+                  </div>
+                </div>
+              </form>
+            </div>
             {questionsLoading ? (
               <p className="text-gray-500">Loading questions...</p>
             ) : questions.length === 0 ? (
