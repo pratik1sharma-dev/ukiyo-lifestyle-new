@@ -67,12 +67,17 @@ const Cart: React.FC = () => {
       setEta('Enter a valid 6-digit pincode');
       return;
     }
-    // Stub: simple range-based ETA. Replace with courier API if available.
-    const prefix = pincode.slice(0, 2);
-    if (['11','12','13'].includes(prefix)) setEta('Delivery in 1–2 days');
-    else if (['40','41','42','43'].includes(prefix)) setEta('Delivery in 2–4 days');
-    else setEta('Delivery in 3–5 days');
+    // Dummy ETA range: 2–5 days from today
+    const minDays = 2;
+    const maxDays = 5;
+    const start = new Date();
+    start.setDate(start.getDate() + minDays);
+    const end = new Date();
+    end.setDate(end.getDate() + maxDays);
+    const formatDay = (d: Date) => d.toLocaleDateString('en-IN', { weekday: 'short' });
+    setEta(`Order today, delivery by ${formatDay(start)}–${formatDay(end)}`);
   };
+
 
   if (loading.isLoading) {
     return (
