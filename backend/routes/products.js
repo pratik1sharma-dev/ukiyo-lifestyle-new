@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Review = require('../models/Review');
 
 // GET /api/products - Get all products
 router.get('/', async (req, res) => {
@@ -103,11 +104,36 @@ router.get('/', async (req, res) => {
       .skip((pageNum - 1) * limitNum);
     
     const total = await Product.countDocuments(query);
+
+    // Aggregate ratings for the returned products to avoid stale zeros
+    const productIds = products.map(p => p._id);
+    let productsWithAggregates = products;
+    if (productIds.length > 0) {
+      const ratings = await Review.aggregate([
+        { $match: { product: { $in: productIds } } },
+        { $group: { _id: '$product', avgRating: { $avg: '$rating' }, count: { $sum: 1 } } }
+      ]);
+
+      const ratingMap = new Map(
+        ratings.map(r => [String(r._id), { rating: Math.round(r.avgRating * 10) / 10, reviewCount: r.count }])
+      );
+
+      productsWithAggregates = products.map(p => {
+        const agg = ratingMap.get(String(p._id));
+        if (agg) {
+          const obj = p.toObject();
+          obj.rating = agg.rating;
+          obj.reviewCount = agg.reviewCount;
+          return obj;
+        }
+        return p;
+      });
+    }
     
     res.json({
       success: true,
       data: {
-        products: products,
+        products: productsWithAggregates,
         pagination: {
           current: pageNum,
           total: Math.ceil(total / limitNum),
