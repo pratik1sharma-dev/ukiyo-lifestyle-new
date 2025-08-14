@@ -7,7 +7,6 @@ const { authenticateToken } = require('./auth');
 
 
 
-
 // Remove duplicate function - using the one defined above
 
 // GET /api/cart - Get user cart (Protected Route)
@@ -81,6 +80,46 @@ router.post('/add', authenticateToken, async (req, res) => {
       message: 'Error adding item to cart',
       error: error.message
     });
+  }
+});
+
+// PUT /api/cart/apply-bundle - Apply bundle discount and optional gift/engraving
+router.put('/apply-bundle', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { productIds = [], giftNote, engraving } = req.body;
+
+    let cart = await Cart.getOrCreateCart(userId);
+    
+    // Calculate discount based on number of unique productIds in cart intersection
+    const uniqueIds = new Set(productIds.map(String));
+    const inCartIds = new Set(cart.items.map(i => String(i.product)));
+    const bundleCount = Array.from(uniqueIds).filter(id => inCartIds.has(id)).length;
+
+    let discountPct = 0;
+    if (bundleCount === 2) discountPct = 10;
+    if (bundleCount >= 3) discountPct = 15;
+
+    const subtotal = cart.subtotal;
+    const discountAmount = Math.round((subtotal * discountPct) / 100);
+
+    cart.discount = discountAmount;
+    cart.bundle = {
+      count: bundleCount,
+      discountPct,
+      productIds: Array.from(uniqueIds),
+      appliedAt: new Date(),
+    };
+    if (giftNote !== undefined) cart.giftNote = giftNote;
+    if (engraving !== undefined) cart.engraving = engraving;
+
+    await cart.save();
+    await cart.populate('items.product', 'name price images slug');
+
+    res.json({ success: true, data: cart });
+  } catch (error) {
+    console.error('Error applying bundle:', error);
+    res.status(500).json({ success: false, message: 'Failed to apply bundle', error: error.message });
   }
 });
 

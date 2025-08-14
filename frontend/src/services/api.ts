@@ -116,6 +116,11 @@ export const cartApi = {
   clearCart: async (): Promise<ApiResponse<{ message: string }>> => {
     return api.delete('/cart/clear');
   },
+
+  // Apply bundle discount and capture gifting fields
+  applyBundle: async (productIds: string[], giftNote?: string, engraving?: string): Promise<ApiResponse<Cart>> => {
+    return api.put('/cart/apply-bundle', { productIds, giftNote, engraving });
+  },
 };
 
 // Auth API - Multiple authentication methods

@@ -294,6 +294,9 @@ const ProductDetail: React.FC = () => {
                   <span className="bg-red-100 text-red-800 text-sm font-medium px-2 py-1 rounded">
                     {discountPercentage}% OFF
                   </span>
+                  <span className="text-sm text-gray-700">
+                    You save ₹{(product.comparePrice - product.price).toLocaleString()} ({discountPercentage}%)
+                  </span>
                 </>
               )}
             </div>
@@ -335,6 +338,9 @@ const ProductDetail: React.FC = () => {
             {/* Description */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+              {product.descriptionOpener && (
+                <p className="text-gray-800 mb-2">{product.descriptionOpener}</p>
+              )}
               <p className="text-gray-600 leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
