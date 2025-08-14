@@ -4,25 +4,24 @@
 - **Navigation (desktop + mobile USPs + “Ships in 24 hrs”)**: Completed
 - **Category/PLP**: Completed UI (filters for Note Family, Intensity, Occasion, Weather; Sort; Cards with badges, Quick Add; Empty state; PLP title/desc). Backend filtering implemented; PLP badges now use dynamic scent/strength/tin size. Ratings aggregated from reviews and shown on cards.
 - **PDP**:
-  - Completed: name, price/compare price, “You save ₹X (Y%)”, scent chips, strength meter with wear text, trust line, Add to Cart, Buy Now (navigates to Checkout), Scent pyramid, Why solid perfume, Longevity & climate, Ingredients & safety, Size & packaging, Shipping & returns (Delhi default), reviews list (aggregated) & Q&A list (aggregated), related products (“You Might Also Like”), description opener copy.
-  - Pending: reviews & Q&A submission UI (with scent/longevity/projection fields).
+  - Completed: name, price/compare price, “You save ₹X (Y%)”, scent chips, strength meter with wear text, trust line, Add to Cart, Buy Now (navigates to Checkout), Scent pyramid, Why solid perfume, Longevity & climate, Ingredients & safety, Size & packaging, Shipping & returns (Delhi default), reviews list (aggregated) & Q&A list (aggregated), related products (“You Might Also Like”), description opener copy, Reviews & Q&A submission UI (with scent/longevity/projection/climate fields).
 - **Data model**: Implemented optional fragrance fields in backend schema and exposed via APIs; frontend type aligned. Admin create/update supports setting all fields (CSV/JSON for arrays; JSON for notes; booleans supported). Added `descriptionOpener` to `Product`.
 - **Discovery & Bundles**: Duo/Trio bundle builder implemented with automatic discounts (10%/15%), gift note and tin engraving captured and stored in cart.
-  - Pending: apply bundle discount to order totals/payment flow and display in Checkout summary; persist gift note/engraving into Order; admin visibility.
+  - Completed: bundle discount applied to Checkout summary and persisted to Order (pricing.discount). Gift note/engraving included in Order notes.
 - **How‑to & care**: Core guidance present on PDP. Pending: optional dedicated How‑To page/section.
-- **Cart/Mini‑cart**: Implemented free‑shipping progress bar (cart + mini‑cart). Pending: “Complete the set” cross‑sell, real delivery ETA by pincode service.
-- **Checkout**: Razorpay integrated; trust microcopy added (secure payments, UPI fastest, GST included). Pending: confidence row block styling; reflect bundle discount/gifting details in summary.
+- **Cart/Mini‑cart**: Free‑shipping progress bar implemented. Completed: “Complete the set” cross‑sell (popular products) and pincode ETA (dummy 2–5 day range by current day).
+- **Checkout**: Razorpay integrated; trust microcopy added (secure payments, UPI fastest, GST included). Pending: confidence row block styling.
 - **Policy & trust**: Pending: dedicated policy page with INCI/IFRA statements, allergen disclosure, origin/manufacturer/batch/MRP/shelf life.
-- **SEO**: Partially done — per‑page titles/descriptions and canonicals added for Home/PLP/PDP. Pending: OG/Twitter tags and meta for Bundles/Discovery/Support/etc.
+- **SEO**: Per‑page titles/descriptions and canonicals added for Home/PLP/PDP. Completed: OG/Twitter tags for Discovery & Bundles. Pending: OG/Twitter for remaining pages, FAQPage/Breadcrumb JSON‑LD, sitemap/robots, and noindex for utility pages.
 - **Retention & community**: Quiz page exists. Pending: email capture + scent recommendations, post‑purchase tips flow, review request prompts with fragrance‑specific fields.
 - **Notes**: No breaking changes introduced; frontend build green.
 
 ### Next Actions Pointer
 - Prioritize: 
-  - Wire bundle discount and gift note/engraving through Checkout and into Order (pricing.discount, notes).
-  - Add Reviews & Q&A submission UI on PDP (with scent/longevity/projection fields).
-  - Expand SEO meta across remaining pages + OG/Twitter cards.
-  - Implement Cart/Mini‑cart cross‑sell (“Complete the set”) and delivery ETA by pincode.
+  - Add OG/Twitter tags to remaining pages; add `FAQPage` + `BreadcrumbList` JSON‑LD; generate `sitemap.xml` and `robots.txt`; add noindex to cart/checkout/login/register/profile/admin.
+  - Add admin visibility for bundle/gift details in Order view.
+  - Style Checkout confidence row.
+  - Upgrade pincode ETA to a courier API when available.
 
 ## Single‑Category D2C Brief — Solid Perfumes Only
 
