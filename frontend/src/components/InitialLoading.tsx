@@ -50,8 +50,3 @@ const InitialLoading: React.FC = () => {
 };
 
 export default InitialLoading;
-
-// Add this to your tailwind.config.js if you don't have it
-// animation: {
-//   'spin-slow': 'spin 3s linear infinite',
-// }

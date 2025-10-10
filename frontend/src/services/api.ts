@@ -268,10 +268,10 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Pings the server to wake it up from a sleeping state (common on free hosting tiers).
- * Retries for up to 40 seconds before failing.
+ * Retries for up to 60 seconds before failing.
  */
 export const wakeUpServer = async (): Promise<void> => {
-  const MAX_ATTEMPTS = 8;
+  const MAX_ATTEMPTS = 12;
   const RETRY_INTERVAL = 5000; // 5 seconds
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
