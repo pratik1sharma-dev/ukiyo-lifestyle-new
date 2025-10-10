@@ -263,4 +263,34 @@ export const adminApi = {
   },
 };
 
+// Utility function to introduce a delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Pings the server to wake it up from a sleeping state (common on free hosting tiers).
+ * Retries for up to 60 seconds before failing.
+ */
+export const wakeUpServer = async (): Promise<void> => {
+  const MAX_ATTEMPTS = 12;
+  const RETRY_INTERVAL = 5000; // 5 seconds
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      // We use a lightweight, public endpoint. Fetching categories is a good choice.
+      // We set a short timeout because we expect a quick failure if the server is asleep.
+      await api.get('/categories', { timeout: 4500 });
+      console.log('Server is awake and responding.');
+      return; // Success
+    } catch (error) {
+      console.warn(`Server wake-up attempt ${attempt} failed. Retrying in ${RETRY_INTERVAL / 1000}s...`);
+      if (attempt < MAX_ATTEMPTS) {
+        await delay(RETRY_INTERVAL);
+      }
+    }
+  }
+
+  console.error('Server did not respond after multiple attempts.');
+  throw new Error('The server seems to be sleeping. Please try again in a moment.');
+};
+
 export default api;

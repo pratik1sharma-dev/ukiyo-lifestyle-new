@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import { useAuthStore } from './store';
+import { useAuthStore, useUIStore } from './store';
+import { wakeUpServer } from './services/api';
+import InitialLoading from './components/InitialLoading';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
@@ -29,11 +31,34 @@ import Quiz from './pages/Quiz';
 
 function App() {
   const { checkAuth } = useAuthStore();
+  const { isServerAwake, setServerAwake } = useUIStore();
 
-  // Check authentication status on app load
+  // Wake up the server on initial app load
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    const initializeApp = async () => {
+      try {
+        await wakeUpServer();
+        setServerAwake(true);
+      } catch (error) {
+        console.error("Failed to wake up server:", error);
+        // Optionally, you could set an error state here to show a message to the user
+        setServerAwake(true); // Still allow the app to proceed, it might recover
+      }
+    };
+
+    initializeApp();
+  }, [setServerAwake]);
+
+  // Check authentication status only after the server is awake
+  useEffect(() => {
+    if (isServerAwake) {
+      checkAuth();
+    }
+  }, [isServerAwake, checkAuth]);
+
+  if (!isServerAwake) {
+    return <InitialLoading />;
+  }
 
   return (
     <Router>
