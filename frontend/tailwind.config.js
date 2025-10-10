@@ -46,6 +46,9 @@ export default {
       },
       fontFamily: {
         'cormorant': ['Cormorant Garamond', 'serif'],
+      },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
       }
     },
   },

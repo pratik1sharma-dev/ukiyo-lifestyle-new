@@ -514,17 +514,20 @@ export const useAuthStore = create<AuthState>()(
 interface UIState {
   isMobileMenuOpen: boolean;
   isSearchOpen: boolean;
+  isServerAwake: boolean; // New state for server status
   theme: 'light' | 'dark';
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
   toggleSearch: () => void;
   closeSearch: () => void;
   setTheme: (theme: 'light' | 'dark') => void;
+  setServerAwake: (isAwake: boolean) => void; // New action
 }
 
 export const useUIStore = create<UIState>((set) => ({
   isMobileMenuOpen: false,
   isSearchOpen: false,
+  isServerAwake: false, // Default to not awake
   theme: 'light',
 
   toggleMobileMenu: () => set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
@@ -532,4 +535,5 @@ export const useUIStore = create<UIState>((set) => ({
   toggleSearch: () => set((state) => ({ isSearchOpen: !state.isSearchOpen })),
   closeSearch: () => set({ isSearchOpen: false }),
   setTheme: (theme) => set({ theme }),
+  setServerAwake: (isAwake: boolean) => set({ isServerAwake: isAwake }), // Action implementation
 }));
